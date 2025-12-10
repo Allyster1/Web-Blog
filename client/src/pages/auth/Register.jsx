@@ -1,9 +1,4 @@
-import googleLogo from "../../assets/google-logo.svg";
-import facebookLogo from "../../assets/facebook-logo.svg";
-
 import InputField from "../../components/ui/InputField";
-import Divider from "../../components/ui/Divider";
-import SocialButton from "../../components/ui/SocialButton";
 import { Link } from "react-router";
 
 export default function Register() {
@@ -45,13 +40,6 @@ export default function Register() {
             className="bg-[#1C4532] text-[#F7FAFC] font-semibold text-1g leading-5 py-3 border rounded-4xl"
             value="Sign up"
          />
-
-         <Divider />
-
-         <div className="flex flex-col gap-4 text-[#718096]">
-            <SocialButton image={googleLogo} text="Continue with Google" />
-            <SocialButton image={facebookLogo} text="Continue with Facebook" />
-         </div>
 
          <p className="text-[#718096] text-sm text-center">
             Already have an account?
