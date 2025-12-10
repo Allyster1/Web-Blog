@@ -15,8 +15,6 @@ export default function Header() {
 
             <Navigation />
          </div>
-
-         {/* Mobile Menu Dropdown */}
       </header>
    );
 }
