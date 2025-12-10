@@ -12,9 +12,10 @@ export default function Navigation() {
             <ul className="flex gap-7">
                <ListItem link={"#"} text={"Articles"} />
                <ListItem link={"#"} text={"Write"} />
-               <ListItem link={"#"} text={"Register"} />
-               <ListItem link={"#"} text={"Login"} />
-               <ListItem link={"#"} text={"Logout"} />
+               <ListItem link={"about"} text={"About"} />
+               <ListItem link={"/auth/register"} text={"Register"} />
+               <ListItem link={"/auth/login"} text={"Login"} />
+               <ListItem link={"/auth/logout"} text={"Logout"} />
             </ul>
          </nav>
 
