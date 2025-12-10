@@ -1,9 +1,11 @@
+import { Link } from "react-router";
+
 export default function ListItem({ link, text }) {
    return (
       <li>
-         <a href={link} className="text-sm hover:text-[#ced4da] hover:underline">
+         <Link to={link} className="text-sm text-white md:text-white hover:text-[#E9FAC8] hover:underline">
             {text}
-         </a>
+         </Link>
       </li>
    );
 }
