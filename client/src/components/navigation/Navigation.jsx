@@ -27,7 +27,21 @@ export default function Navigation() {
             <HamburgerLine />
             <HamburgerLine />
          </button>
+
          {/* TODO: fix hamburget functionality */}
+         <nav
+            className={`md:hidden  ${
+               isOpen ? "max-h-96" : "max-h-0"
+            } absolute top-full right-0 opacity-90 overflow-hidden rounded-bl-3xl bg-[#087F5B] transition-all duration-300`}
+         >
+            <ul className="flex flex-col gap-4 px-7 py-4">
+               <ListItem link={"#"} text={"Articles"} />
+               <ListItem link={"#"} text={"Write"} />
+               <ListItem link={"/auth/register"} text={"Register"} />
+               <ListItem link={"/auth/login"} text={"Login"} />
+               {/* <ListItem link={"#"} text={"Logout"} /> */}
+            </ul>
+         </nav>
       </>
    );
 }
