@@ -1,19 +1,30 @@
 import { Router } from "express";
+import { register, login } from "../services/userService.js";
 
 const userController = Router();
 
 // Register
 userController.post("/register", async (req, res) => {
-  res.send("register");
+  try {
+    const { email, password, rePass } = req.body;
+    const token = await register(email, password, rePass);
 
-  res.end();
+    res.status(201).json({ token });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 // Login
 userController.post("/login", async (req, res) => {
-  res.send("login");
+  try {
+    const { email, password } = req.body;
+    const token = await login(email, password);
 
-  res.end();
+    res.status(200).json({ token });
+  } catch (error) {
+    res.status(401).json({ error: error.message });
+  }
 });
 
 // Logout

@@ -4,37 +4,38 @@ import User from "../models/User.js";
 import { generateAuthToken } from "../utils/tokenUtils.js";
 
 export async function register(email, password, rePass) {
-  const user = await User.findOne({ email });
+   const user = await User.findOne({ email });
 
-  if (user) {
-    throw new Error("Email already exists");
-  }
+   if (user) {
+      throw new Error("Email already exists");
+   }
 
-  if (password !== rePass) {
-    throw new Error("Password missmatch");
-  }
+   if (password !== rePass) {
+      throw new Error("Password missmatch");
+   }
 
-  const createdUser = await User.create({ email, password, rePass });
+   const createdUser = await User.create({ email, password });
 
-  const token = generateAuthToken(createdUser);
+   const token = generateAuthToken(createdUser);
 
-  return token;
+   return token;
 }
 
 export async function login(email, password) {
-  const user = await User.findOne({ email });
+   // include the password field (it's `select: false` in the schema)
+   const user = await User.findOne({ email }).select("+password");
 
-  if (!user) {
-    throw new Error("Invalid email or password");
-  }
+   if (!user) {
+      throw new Error("Invalid email or password");
+   }
 
-  const isValid = await bcrypt.compare(password, user.password);
+   const isValid = await bcrypt.compare(password, user.password);
 
-  if (!isValid) {
-    throw new Error("Invalid email or password");
-  }
+   if (!isValid) {
+      throw new Error("Invalid email or password");
+   }
 
-  const token = generateAuthToken(user);
+   const token = generateAuthToken(user);
 
-  return token;
+   return token;
 }
