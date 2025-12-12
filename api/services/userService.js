@@ -7,11 +7,11 @@ export async function register(email, password, rePass) {
    const user = await User.findOne({ email });
 
    if (user) {
-      throw new Error("Email already exists");
+      throw new Error("User already exists!");
    }
 
    if (password !== rePass) {
-      throw new Error("Password missmatch");
+      throw new Error("Password mismatch!");
    }
 
    const createdUser = await User.create({ email, password });
@@ -22,7 +22,6 @@ export async function register(email, password, rePass) {
 }
 
 export async function login(email, password) {
-   // include the password field (it's `select: false` in the schema)
    const user = await User.findOne({ email }).select("+password");
 
    if (!user) {
