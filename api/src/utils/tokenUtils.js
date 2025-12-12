@@ -106,7 +106,7 @@ export async function rotateRefreshToken(oldToken) {
 }
 
 /**
- * Attach access and refresh tokens to the response headers.
+ * Attach access and refresh tokens to the response.
  *
  * @param {import('express').Response} res - Express response object.
  * @param {string} accessToken - The JWT access token.
@@ -114,5 +114,13 @@ export async function rotateRefreshToken(oldToken) {
  */
 export function attachTokensToResponse(res, accessToken, refreshToken) {
    res.setHeader("x-access-token", accessToken);
-   res.setHeader("x-refresh-token", refreshToken);
+
+   res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      // domain: "your-frontend-domain.com", // optional: usually omit unless needed
+      path: "/",
+   });
 }
