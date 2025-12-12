@@ -120,7 +120,6 @@ export function attachTokensToResponse(res, accessToken, refreshToken) {
       secure: true,
       sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      // domain: "your-frontend-domain.com", // optional: usually omit unless needed
       path: "/",
    });
 }

@@ -9,23 +9,29 @@ import { attachTokensToResponse } from "../utils/tokenUtils.js";
 
 const userController = Router();
 
+// REGISTER
 userController.post("/register", authRateLimiter, registerValidation, validate, async (req, res, next) => {
    try {
       const { email, password, rePass } = req.body;
-      const tokens = await register(email, password, rePass);
+      const { accessToken, refreshToken } = await register(email, password, rePass);
 
-      res.status(201).json(tokens);
+      attachTokensToResponse(res, accessToken, refreshToken);
+
+      res.status(201).json({ accessToken });
    } catch (error) {
       next(error);
    }
 });
 
+
 userController.post("/login", authRateLimiter, loginValidation, validate, async (req, res, next) => {
    try {
       const { email, password } = req.body;
-      const tokens = await login(email, password);
+      const { accessToken, refreshToken } = await login(email, password);
 
-      res.status(200).json(tokens);
+      attachTokensToResponse(res, accessToken, refreshToken);
+
+      res.status(200).json({ accessToken });
    } catch (error) {
       next(error);
    }
@@ -34,6 +40,9 @@ userController.post("/login", authRateLimiter, loginValidation, validate, async 
 userController.post("/logout", authMiddleware, async (req, res, next) => {
    try {
       await logout(req.user.id);
+
+      res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "None", path: "/" });
+
       res.status(200).json({ message: "Logout successful" });
    } catch (error) {
       next(error);
@@ -49,6 +58,7 @@ userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
       }
 
       const tokens = await refreshUserToken(refreshToken);
+
       attachTokensToResponse(res, tokens.accessToken, tokens.refreshToken);
 
       res.status(200).json({ accessToken: tokens.accessToken });
