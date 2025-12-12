@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import corseMiddleware from "./config/cors.js";
+import corsMiddleware from "./config/cors.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 
@@ -15,7 +15,7 @@ await connectDB();
 
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
-app.use(corseMiddleware);
+app.use(corsMiddleware);
 app.use(express.json());
 app.use(cookieParser());
 
