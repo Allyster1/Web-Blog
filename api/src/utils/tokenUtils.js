@@ -1,6 +1,17 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import User from "../src/models/User.js";
+import User from "../models/User.js";
+import bcrypt from "bcrypt";
+
+const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
+
+export async function hashToken(token) {
+   return await bcrypt.hash(token, saltRounds);
+}
+
+export async function verifyToken(token, hashedToken) {
+   return await bcrypt.compare(token, hashedToken);
+}
 
 /**
  * Generate a new JWT access token (short-lived).
@@ -23,13 +34,14 @@ export function generateAccessToken(user) {
  * Generate a new refresh token with an expiration date.
  *
  * @param {number} [expiryDays=7] - Number of days until the refresh token expires.
- * @returns {{ token: string, expiresAt: Date }} An object containing the generated refresh token and its expiration date.
+ * @returns {{ token: string, tokenId: string, expiresAt: Date }} An object containing the generated refresh token, its identifier prefix, and expiration date.
  */
 export function generateRefreshToken(expiryDays = 7) {
    const token = crypto.randomBytes(64).toString("hex");
+   const tokenId = token.substring(0, 32);
    const expiresAt = new Date();
    expiresAt.setDate(expiresAt.getDate() + expiryDays);
-   return { token, expiresAt };
+   return { token, tokenId, expiresAt };
 }
 
 /**
@@ -53,24 +65,44 @@ export function verifyAccessToken(token) {
  * @throws {Error} Throws if the old token is invalid or expired.
  */
 export async function rotateRefreshToken(oldToken) {
-   const user = await User.findOne({ "refreshToken.token": oldToken }).select("+refreshToken");
+   // Extract tokenId (first 32 chars) for efficient indexed lookup
+   const tokenId = oldToken.substring(0, 32);
 
-   if (!user) throw new Error("Invalid refresh token");
+   // Query user by indexed tokenId instead of scanning all users
+   const userFound = await User.findOne({
+      "refreshToken.tokenId": tokenId,
+   }).select("+refreshToken");
 
-   // Check if token expired
-   if (new Date() > user.refreshToken.expiresAt) {
-      user.refreshToken = null;
-      await user.save();
+   if (!userFound || !userFound.refreshToken) {
+      throw new Error("Invalid refresh token");
+   }
+
+   // Verify the token hash matches
+   const isValidToken = await verifyToken(oldToken, userFound.refreshToken.token);
+   if (!isValidToken) {
+      throw new Error("Invalid refresh token");
+   }
+
+   // Check expiration
+   if (new Date() > userFound.refreshToken.expiresAt) {
+      userFound.refreshToken = null;
+      await userFound.save();
       throw new Error("Refresh token expired");
    }
 
-   const { token, expiresAt } = generateRefreshToken();
-   const accessToken = generateAccessToken(user);
+   // Generate new tokens
+   const { token, tokenId: newTokenId, expiresAt } = generateRefreshToken();
+   const accessToken = generateAccessToken(userFound);
 
-   user.refreshToken = { token, expiresAt };
-   await user.save();
+   // Store hashed token and tokenId
+   userFound.refreshToken = {
+      token: await hashToken(token),
+      tokenId: newTokenId,
+      expiresAt,
+   };
+   await userFound.save();
 
-   return { user, accessToken, refreshToken: token };
+   return { user: userFound, accessToken, refreshToken: token };
 }
 
 /**
