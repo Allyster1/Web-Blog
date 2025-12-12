@@ -21,15 +21,28 @@ const userSchema = new Schema(
          required: [true, "Password is required!"],
          minLength: [8, "The password should be at least 8 characters long"],
          validate: [
-            { validator: (v) => /[a-z]/.test(v), message: "Password must contain a lowercase letter" },
-            { validator: (v) => /[A-Z]/.test(v), message: "Password must contain an uppercase letter" },
-            { validator: (v) => /\d/.test(v), message: "Password must contain a number" },
-            { validator: (v) => /[@$!%*?&]/.test(v), message: "Password must contain a special character" },
+            {
+               validator: (v) => /[a-z]/.test(v),
+               message: "Password must contain a lowercase letter",
+            },
+            {
+               validator: (v) => /[A-Z]/.test(v),
+               message: "Password must contain an uppercase letter",
+            },
+            {
+               validator: (v) => /\d/.test(v),
+               message: "Password must contain a number",
+            },
+            {
+               validator: (v) => /[@$!%*?&]/.test(v),
+               message: "Password must contain a special character",
+            },
          ],
          select: false,
       },
       refreshToken: {
          token: { type: String, select: false },
+         tokenId: { type: String, select: false, index: true },
          expiresAt: { type: Date, select: false },
       },
    },
