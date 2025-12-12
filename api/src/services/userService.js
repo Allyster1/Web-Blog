@@ -9,17 +9,20 @@ export async function register(email, password, rePass) {
    const user = await User.findOne({ email });
    if (user) throw new Error("User already exists!");
 
-   const createdUser = await User.create({ email, password });
+   const { token, tokenId, expiresAt } = generateRefreshToken();
+   const hashedToken = await hashToken(token);
+
+   const createdUser = await User.create({
+      email,
+      password,
+      refreshToken: {
+         token: hashedToken,
+         tokenId,
+         expiresAt,
+      },
+   });
 
    const accessToken = generateAccessToken(createdUser);
-   const { token, tokenId, expiresAt } = generateRefreshToken();
-
-   createdUser.refreshToken = {
-      token: await hashToken(token),
-      tokenId,
-      expiresAt,
-   };
-   await createdUser.save();
 
    return { accessToken, refreshToken: token };
 }
