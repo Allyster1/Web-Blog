@@ -3,6 +3,6 @@ import userController from "../controllers/userController.js";
 
 const router = Router();
 
-router.use("/api/auth/users", userController);
+router.use("/api/auth", userController);
 
 export default router;
