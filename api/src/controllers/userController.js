@@ -3,10 +3,11 @@ import { register, login, logout, refreshUserToken } from "../services/userServi
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { registerValidation, loginValidation } from "../validations/userValidation.js";
 import { validate } from "../middlewares/validateMiddleware.js";
+import { authRateLimiter } from "../middlewares/authRateLimiter.js";
 
 const userController = Router();
 
-userController.post("/register", registerValidation, validate, async (req, res, next) => {
+userController.post("/register", authRateLimiter, registerValidation, validate, async (req, res, next) => {
    try {
       const { email, password, rePass } = req.body;
       const tokens = await register(email, password, rePass);
@@ -17,7 +18,7 @@ userController.post("/register", registerValidation, validate, async (req, res, 
    }
 });
 
-userController.post("/login", loginValidation, validate, async (req, res, next) => {
+userController.post("/login", authRateLimiter, loginValidation, validate, async (req, res, next) => {
    try {
       const { email, password } = req.body;
       const tokens = await login(email, password);
