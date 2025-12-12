@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 
 import User from "../models/User.js";
-import { generateAccessToken, generateRefreshToken, rotateRefreshToken } from "../utils/tokenUtils.js";
+import { generateAccessToken, generateRefreshToken, rotateRefreshToken, hashToken } from "../utils/tokenUtils.js";
 
 export async function register(email, password, rePass) {
    if (password !== rePass) throw new Error("Password mismatch!");
@@ -12,12 +12,16 @@ export async function register(email, password, rePass) {
    const createdUser = await User.create({ email, password });
 
    const accessToken = generateAccessToken(createdUser);
-   const refreshToken = generateRefreshToken();
+   const { token, tokenId, expiresAt } = generateRefreshToken();
 
-   createdUser.refreshToken = refreshToken;
+   createdUser.refreshToken = {
+      token: await hashToken(token),
+      tokenId,
+      expiresAt,
+   };
    await createdUser.save();
 
-   return { accessToken, refreshToken };
+   return { accessToken, refreshToken: token };
 }
 
 export async function login(email, password) {
@@ -28,12 +32,16 @@ export async function login(email, password) {
    if (!isValid) throw new Error("Invalid email or password");
 
    const accessToken = generateAccessToken(user);
-   const refreshToken = generateRefreshToken();
+   const { token, tokenId, expiresAt } = generateRefreshToken();
 
-   user.refreshToken = refreshToken;
+   user.refreshToken = {
+      token: await hashToken(token),
+      tokenId,
+      expiresAt,
+   };
    await user.save();
 
-   return { accessToken, refreshToken };
+   return { accessToken, refreshToken: token };
 }
 
 export async function logout(userId) {
