@@ -12,6 +12,8 @@ const app = express();
 
 await connectDB();
 
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
 app.use(corseMiddleware);
 app.use(express.json());
 app.use(cookieParser());
