@@ -1,4 +1,4 @@
-import { verifyAccessToken, rotateRefreshToken, attachTokensToResponse } from "../../utils/tokenUtils.js";
+import { verifyAccessToken, rotateRefreshToken, attachTokensToResponse } from "../utils/tokenUtils.js";
 
 export async function authMiddleware(req, res, next) {
    const authHeader = req.headers.authorization;
