@@ -1,4 +1,3 @@
-// api/utils/tokenUtils.js
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import User from "../models/User.js";
@@ -38,9 +37,7 @@ export function verifyAccessToken(token) {
 export async function rotateRefreshToken(oldRefreshToken) {
    const user = await User.findOne({ refreshToken: oldRefreshToken }).select("+refreshToken");
 
-   if (!user) {
-      throw new Error("Invalid refresh token");
-   }
+   if (!user) throw new Error("Invalid refresh token");
 
    const newRefreshToken = generateRefreshToken();
    const newAccessToken = generateAccessToken(user);
