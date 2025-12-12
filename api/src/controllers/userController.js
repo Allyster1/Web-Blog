@@ -5,6 +5,7 @@ import { registerValidation, loginValidation } from "../validations/userValidati
 import { validate } from "../middlewares/validateMiddleware.js";
 import { authRateLimiter } from "../middlewares/rateLimiters/authRateLimiter.js";
 import { refreshRateLimiter } from "../middlewares/rateLimiters/refreshRateLimiter.js";
+import { attachTokensToResponse } from "../utils/tokenUtils.js";
 
 const userController = Router();
 
@@ -41,9 +42,16 @@ userController.post("/logout", authMiddleware, async (req, res, next) => {
 
 userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
    try {
-      const { token } = req.body;
-      const tokens = await refreshUserToken(token);
-      res.status(200).json(tokens);
+      const refreshToken = req.cookies?.refreshToken;
+
+      if (!refreshToken) {
+         return res.status(401).json({ message: "Refresh token missing" });
+      }
+
+      const tokens = await refreshUserToken(refreshToken);
+      attachTokensToResponse(res, tokens.accessToken, tokens.refreshToken);
+
+      res.status(200).json({ accessToken: tokens.accessToken });
    } catch (error) {
       next(error);
    }
