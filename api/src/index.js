@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import corseMiddleware from "./config/cors.js";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 
 import connectDB from "./config/database.js";
 import router from "./config/routes.js";
