@@ -6,7 +6,7 @@ import morgan from "morgan";
 
 import connectDB from "./config/database.js";
 import router from "./config/routes.js";
-import { globalRateLimiter } from "./middlewares/globalRateLimiter.js";
+import { globalRateLimiter } from "./middlewares/rateLimiters/globalRateLimiter.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
 const app = express();

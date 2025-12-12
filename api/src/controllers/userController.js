@@ -3,8 +3,8 @@ import { register, login, logout, refreshUserToken } from "../services/userServi
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { registerValidation, loginValidation } from "../validations/userValidation.js";
 import { validate } from "../middlewares/validateMiddleware.js";
-import { authRateLimiter } from "../middlewares/authRateLimiter.js";
-import { refreshRateLimiter } from "../middlewares/refreshRateLimiter.js";
+import { authRateLimiter } from "../middlewares/rateLimiters/authRateLimiter.js";
+import { refreshRateLimiter } from "../middlewares/rateLimiters/refreshRateLimiter.js";
 
 const userController = Router();
 
