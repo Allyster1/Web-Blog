@@ -4,6 +4,7 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { registerValidation, loginValidation } from "../validations/userValidation.js";
 import { validate } from "../middlewares/validateMiddleware.js";
 import { authRateLimiter } from "../middlewares/authRateLimiter.js";
+import { refreshRateLimiter } from "../middlewares/refreshRateLimiter.js";
 
 const userController = Router();
 
@@ -38,7 +39,7 @@ userController.post("/logout", authMiddleware, async (req, res, next) => {
    }
 });
 
-userController.post("/refresh", async (req, res, next) => {
+userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
    try {
       const { token } = req.body;
       const tokens = await refreshUserToken(token);
