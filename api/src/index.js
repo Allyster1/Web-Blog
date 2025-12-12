@@ -3,6 +3,7 @@ import express from "express";
 import corsMiddleware from "./config/cors.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
+import helmet from "helmet";
 
 import connectDB from "./config/database.js";
 import router from "./config/routes.js";
@@ -14,6 +15,7 @@ const app = express();
 await connectDB();
 
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+app.use(helmet());
 
 app.use(corsMiddleware);
 app.use(express.json());
