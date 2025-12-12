@@ -29,8 +29,8 @@ const userSchema = new Schema(
          select: false,
       },
       refreshToken: {
-         type: String,
-         select: false,
+         token: { type: String, select: false },
+         expiresAt: { type: Date, select: false },
       },
    },
    {
