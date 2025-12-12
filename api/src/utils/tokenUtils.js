@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import User from "../models/User.js";
+import User from "../src/models/User.js";
 
 /**
  * Generate a new JWT access token (short-lived).

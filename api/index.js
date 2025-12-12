@@ -1,11 +1,11 @@
 import "dotenv/config";
 import express from "express";
-import { corseMiddleware } from "./config/cors.js";
+import corseMiddleware from "./config/cors.js";
 import cookieParser from "cookie-parser";
 
 import router from "./config/routes.js";
 import connectDB from "./config/database.js";
-import { errorMiddleware } from "../middlewares/errorMiddleware.js";
+import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
 const app = express();
 
