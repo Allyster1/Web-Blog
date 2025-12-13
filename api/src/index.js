@@ -4,17 +4,21 @@ import corsMiddleware from "./config/cors.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 
 import connectDB from "./config/database.js";
 import router from "./config/routes.js";
 import { globalRateLimiter } from "./middlewares/rateLimiters/globalRateLimiter.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
+const PORT = process.env.PORT || 3000;
+
 const app = express();
 
 await connectDB();
 
 app.use(helmet());
+app.use(mongoSanitize());
 
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
@@ -29,4 +33,4 @@ app.use(globalRateLimiter);
 app.use(router);
 app.use(errorMiddleware);
 
-app.listen(process.env.PORT, () => console.log(`Server is running on http://localhost:${process.env.PORT}`));
+app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
