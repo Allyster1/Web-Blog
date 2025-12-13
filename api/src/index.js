@@ -17,7 +17,7 @@ const app = express();
 
 await connectDB();
 
-app.use(helmet());
+app.use(helmet.hsts({ maxAge: 63072000, includeSubDomains: true }));
 app.use(mongoSanitize());
 
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
