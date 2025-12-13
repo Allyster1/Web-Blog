@@ -5,4 +5,6 @@ const router = Router();
 
 router.use("/api/v1/auth", userController);
 
+app.get("/health", (req, res) => res.json({ status: "ok" }));
+
 export default router;
