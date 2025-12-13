@@ -14,11 +14,15 @@ const app = express();
 
 await connectDB();
 
-app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(helmet());
 
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
 app.use(corsMiddleware);
-app.use(express.json());
+
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: false, limit: "10kb" }));
+
 app.use(cookieParser());
 
 app.use(globalRateLimiter);
