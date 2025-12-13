@@ -6,14 +6,14 @@ export function errorMiddleware(err, req, res, next) {
 
    const details = process.env.NODE_ENV === "production" ? undefined : err.stack || err.details;
 
-   //   console.error("Error occurred:", {
-   //     message: err.message,
-   //     stack: err.stack,
-   //     status,
-   //     path: req.originalUrl,
-   //     method: req.method,
-   //     body: req.body,
-   //   });
+   console.error("Error occurred:", {
+      message: err.message,
+      stack: err.stack,
+      status,
+      path: req.originalUrl,
+      method: req.method,
+      body: req.body,
+   });
 
    res.status(status).json({ message, details });
 }
