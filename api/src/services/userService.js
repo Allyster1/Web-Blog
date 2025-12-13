@@ -7,7 +7,7 @@ export async function register(email, password, rePass) {
    if (password !== rePass) throw new Error("Password mismatch!");
 
    const user = await User.findOne({ email });
-   if (user) throw new Error("User already exists!");
+   if (user) throw new Error("If an account exists, you’ll receive an email");
 
    const { token, tokenId, expiresAt } = generateRefreshToken();
    const hashedToken = await hashToken(token);
@@ -49,7 +49,7 @@ export async function login(email, password) {
 
 export async function logout(userId) {
    const user = await User.findById(userId);
-   if (!user) throw new Error("User not found");
+   if (!user) return;
 
    user.refreshToken = null;
    await user.save();

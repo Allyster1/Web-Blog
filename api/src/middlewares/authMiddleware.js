@@ -1,10 +1,11 @@
 import { verifyAccessToken, rotateRefreshToken, attachTokensToResponse } from "../utils/tokenUtils.js";
+import { UnauthorizedError } from "../utils/AppError.js";
 
 export async function authMiddleware(req, res, next) {
    const authHeader = req.headers.authorization;
    const refreshToken = req.cookies?.refreshToken;
 
-   if (!authHeader) return res.status(401).json({ message: "Unauthorized" });
+   if (!authHeader) return next(new UnauthorizedError("No authorization header"));
 
    const token = authHeader.split(" ")[1];
 
@@ -22,10 +23,10 @@ export async function authMiddleware(req, res, next) {
             req.user = { id: user._id, email: user.email };
             next();
          } catch (error) {
-            return res.status(403).json({ message: "Invalid refresh token" });
+            return next(new UnauthorizedError("Invalid refresh token"));
          }
       } else {
-         return res.status(401).json({ message: "Invalid token" });
+         return next(new UnauthorizedError("Invalid token"));
       }
    }
 }
