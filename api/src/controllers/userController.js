@@ -9,7 +9,6 @@ import { attachTokensToResponse } from "../utils/tokenUtils.js";
 
 const userController = Router();
 
-// REGISTER
 userController.post("/register", authRateLimiter, registerValidation, validate, async (req, res, next) => {
    try {
       const { email, password, rePass } = req.body;
@@ -22,7 +21,6 @@ userController.post("/register", authRateLimiter, registerValidation, validate, 
       next(error);
    }
 });
-
 
 userController.post("/login", authRateLimiter, loginValidation, validate, async (req, res, next) => {
    try {

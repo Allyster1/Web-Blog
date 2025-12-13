@@ -2,12 +2,13 @@ import bcrypt from "bcrypt";
 
 import User from "../models/User.js";
 import { generateAccessToken, generateRefreshToken, rotateRefreshToken, hashToken } from "../utils/tokenUtils.js";
+import { BadRequestError, UnauthorizedError } from "../utils/AppError.js";
 
 export async function register(email, password, rePass) {
-   if (password !== rePass) throw new Error("Password mismatch!");
+   if (password !== rePass) throw new BadRequestError("Passwords do not match!");
 
    const user = await User.findOne({ email });
-   if (user) throw new Error("If an account exists, you’ll receive an email");
+   if (user) throw new BadRequestError("If an account exists, you’ll receive an email");
 
    const { token, tokenId, expiresAt } = generateRefreshToken();
    const hashedToken = await hashToken(token);
@@ -29,10 +30,10 @@ export async function register(email, password, rePass) {
 
 export async function login(email, password) {
    const user = await User.findOne({ email }).select("+password");
-   if (!user) throw new Error("Invalid email or password");
+   if (!user) throw new UnauthorizedError("Invalid email or password");
 
    const isValid = await bcrypt.compare(password, user.password);
-   if (!isValid) throw new Error("Invalid email or password");
+   if (!isValid) throw new UnauthorizedError("Invalid email or password");
 
    const accessToken = generateAccessToken(user);
    const { token, tokenId, expiresAt } = generateRefreshToken();

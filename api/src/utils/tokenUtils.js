@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
+import { UnauthorizedError } from "../utils/AppError.js";
 
 const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
 
@@ -74,20 +75,20 @@ export async function rotateRefreshToken(oldToken) {
    }).select("+refreshToken");
 
    if (!userFound || !userFound.refreshToken) {
-      throw new Error("Invalid refresh token");
+      throw new UnauthorizedError("Invalid refresh token");
    }
 
    // Verify the token hash matches
    const isValidToken = await verifyToken(oldToken, userFound.refreshToken.token);
    if (!isValidToken) {
-      throw new Error("Invalid refresh token");
+      throw new UnauthorizedError("Invalid refresh token");
    }
 
    // Check expiration
    if (new Date() > userFound.refreshToken.expiresAt) {
       userFound.refreshToken = null;
       await userFound.save();
-      throw new Error("Refresh token expired");
+      throw new UnauthorizedError("Invalid refresh token");
    }
 
    // Generate new tokens
