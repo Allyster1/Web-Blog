@@ -4,7 +4,6 @@ import corsMiddleware from "./config/cors.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
-import mongoSanitize from "express-mongo-sanitize";
 
 import connectDB from "./config/database.js";
 import router from "./config/routes.js";
@@ -18,7 +17,6 @@ const app = express();
 await connectDB();
 
 app.use(helmet.hsts({ maxAge: 63072000, includeSubDomains: true }));
-app.use(mongoSanitize());
 
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
