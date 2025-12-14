@@ -1,9 +1,36 @@
 import InputField from "../../components/ui/InputField";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import useControlledFormHook from "../../hooks/useControllerForm";
 
 export default function Register() {
+   const navigate = useNavigate();
+
+   const registerHandler = async (values) => {
+      const { email, password, rePass } = values;
+
+      const response = await fetch("http://localhost:5000/api/v1/auth/register", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         credentials: "include",
+         body: JSON.stringify({ email, password, rePass }),
+      });
+
+      if (!response.ok) {
+         // handle errors
+         console.error("Login failed:", response.status, response.statusText);
+         const text = await response.text();
+         console.log("Response body:", text);
+         return;
+      }
+
+      const result = await response.json();
+      console.log(result);
+      navigate("/");
+   };
+
+   const { values, changeHandler, submitHandler } = useControlledFormHook({ email: "", password: "" }, registerHandler);
    return (
-      <form className="flex flex-col gap-6">
+      <form className="flex flex-col gap-6" onSubmit={submitHandler}>
          <h1 className="font-bold text-3xl md:text-4xl text-[#171923]">Sign up</h1>
 
          <InputField
@@ -14,6 +41,8 @@ export default function Register() {
             placeholder="example@email.com"
             autoComplete="email"
             required
+            values={values.email}
+            onChange={changeHandler}
          />
          <InputField
             label="Password"
@@ -23,16 +52,20 @@ export default function Register() {
             placeholder="******"
             autoComplete="password"
             required
+            values={values.password}
+            onChange={changeHandler}
          />
 
          <InputField
             label="Confirm Password"
             id="rePass"
             name="rePass"
-            type="rePass"
+            type="password"
             placeholder="******"
             autoComplete="rePass"
             required
+            values={values.rePass}
+            onChange={changeHandler}
          />
 
          <input

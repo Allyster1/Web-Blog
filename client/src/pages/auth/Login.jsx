@@ -1,8 +1,9 @@
 import InputField from "../../components/ui/InputField";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import useControlledFormHook from "../../hooks/useControllerForm";
 
 export default function Login() {
+   const navigate = useNavigate();
    const loginHandler = async (values) => {
       const { email, password } = values;
 
@@ -23,6 +24,7 @@ export default function Login() {
 
       const result = await response.json();
       console.log(result);
+      navigate("/");
    };
 
    const { values, changeHandler, submitHandler } = useControlledFormHook({ email: "", password: "" }, loginHandler);
