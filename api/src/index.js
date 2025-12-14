@@ -10,7 +10,7 @@ import router from "./config/routes.js";
 import { globalRateLimiter } from "./middlewares/rateLimiters/globalRateLimiter.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 
