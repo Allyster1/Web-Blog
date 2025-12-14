@@ -10,7 +10,7 @@ export default function Navigation() {
       <>
          <nav className="hidden md:flex">
             <ul className="flex gap-7">
-               <ListItem link={"#"} text={"Articles"} />
+               <ListItem link={"/"} text={"Articles"} />
                <ListItem link={"#"} text={"Write"} />
                <ListItem link={"about"} text={"About"} />
                <ListItem link={"/auth/register"} text={"Register"} />
