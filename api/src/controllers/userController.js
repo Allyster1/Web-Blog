@@ -39,7 +39,12 @@ userController.post("/logout", authMiddleware, async (req, res, next) => {
    try {
       await logout(req.user.id);
 
-      res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "None", path: "/" });
+      res.clearCookie("refreshToken", {
+         httpOnly: true,
+         secure: process.env.NODE_ENV === "production",
+         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+         path: "/",
+      });
 
       res.status(200).json({ message: "Logout successful" });
    } catch (error) {

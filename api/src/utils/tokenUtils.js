@@ -74,7 +74,7 @@ export async function rotateRefreshToken(oldToken) {
       "refreshToken.tokenId": tokenId,
    }).select("+refreshToken");
 
-   if (!userFound || !userFound.refreshToken) {
+   if (!userFound || !userFound.refreshToken || !userFound.refreshToken.token) {
       throw new UnauthorizedError("Invalid refresh token");
    }
 
@@ -113,13 +113,16 @@ export async function rotateRefreshToken(oldToken) {
  * @param {string} accessToken - The JWT access token.
  * @param {string} refreshToken - The refresh token.
  */
+
+const isProduction = process.env.NODE_ENV === "production";
+
 export function attachTokensToResponse(res, accessToken, refreshToken) {
    res.setHeader("x-access-token", accessToken);
 
    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: "/",
    });
