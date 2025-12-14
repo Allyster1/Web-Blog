@@ -1,9 +1,34 @@
 import InputField from "../../components/ui/InputField";
 import { Link } from "react-router";
+import useControlledFormHook from "../../hooks/useControllerForm";
 
 export default function Login() {
+   const loginHandler = async (values) => {
+      const { email, password } = values;
+
+      const response = await fetch("http://localhost:5000/api/v1/auth/login", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         credentials: "include",
+         body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+         // handle errors
+         console.error("Login failed:", response.status, response.statusText);
+         const text = await response.text();
+         console.log("Response body:", text);
+         return;
+      }
+
+      const result = await response.json();
+      console.log(result);
+   };
+
+   const { values, changeHandler, submitHandler } = useControlledFormHook({ email: "", password: "" }, loginHandler);
+
    return (
-      <form className="flex flex-col gap-6">
+      <form className="flex flex-col gap-6" onSubmit={submitHandler}>
          <h1 className="font-bold text-3xl md:text-4xl text-[#171923]">Sign In</h1>
 
          <InputField
@@ -14,6 +39,8 @@ export default function Login() {
             placeholder="example@email.com"
             autoComplete="email"
             required
+            value={values.email}
+            onChange={changeHandler}
          />
          <InputField
             label="Password"
@@ -23,6 +50,8 @@ export default function Login() {
             placeholder="******"
             autoComplete="password"
             required
+            value={values.password}
+            onChange={changeHandler}
          />
 
          <div className="flex justify-between">
