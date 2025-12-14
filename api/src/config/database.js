@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI || process.env.DATABASE;
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/myBlog_dev";
 
 export default async function connectDB() {
    try {
