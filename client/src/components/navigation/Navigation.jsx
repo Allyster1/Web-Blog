@@ -2,9 +2,22 @@ import { useState } from "react";
 
 import ListItem from "../ui/ListItem";
 import HamburgerLine from "../ui/HamburgerLine";
+import { logout } from "../../services/authService";
+import { useNavigate } from "react-router";
 
 export default function Navigation() {
+   const navigate = useNavigate();
    const [isOpen, setIsOpen] = useState(false);
+
+   const logoutHandler = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) return;
+
+      await logout(accessToken);
+
+      localStorage.removeItem("accessToken");
+      navigate("/");
+   };
 
    return (
       <>
@@ -15,7 +28,14 @@ export default function Navigation() {
                <ListItem link={"about"} text={"About"} />
                <ListItem link={"/auth/register"} text={"Register"} />
                <ListItem link={"/auth/login"} text={"Login"} />
-               <ListItem link={"/auth/logout"} text={"Logout"} />
+               <li>
+                  <button
+                     onClick={logoutHandler}
+                     className="text-sm text-white hover:text-[#E9FAC8] cursor-pointer hover:underline"
+                  >
+                     Logout
+                  </button>
+               </li>
             </ul>
          </nav>
 

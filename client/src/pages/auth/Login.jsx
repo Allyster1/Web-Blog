@@ -1,30 +1,19 @@
 import InputField from "../../components/ui/InputField";
 import { Link, useNavigate } from "react-router";
 import useControlledFormHook from "../../hooks/useControllerForm";
+import { login } from "../../services/authService";
 
 export default function Login() {
    const navigate = useNavigate();
    const loginHandler = async (values) => {
-      const { email, password } = values;
+      try {
+         const result = await login(values);
 
-      const response = await fetch("http://localhost:5000/api/v1/auth/login", {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         credentials: "include",
-         body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-         // handle errors
-         console.error("Login failed:", response.status, response.statusText);
-         const text = await response.text();
-         console.log("Response body:", text);
-         return;
+         localStorage.setItem("accessToken", result.accessToken);
+         navigate("/");
+      } catch (err) {
+         console.error(err.message);
       }
-
-      const result = await response.json();
-      console.log(result);
-      navigate("/");
    };
 
    const { values, changeHandler, submitHandler } = useControlledFormHook({ email: "", password: "" }, loginHandler);
