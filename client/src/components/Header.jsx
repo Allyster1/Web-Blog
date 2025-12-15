@@ -1,14 +1,15 @@
+import { Link } from "react-router";
 import logo from "../assets/logo.svg";
 import Navigation from "./navigation/Navigation";
 
 export default function Header() {
    return (
-      <header className="bg-[#087f5b] border-b border-gray-200 text-white">
+      <header className="bg-[#53946c] border-b border-gray-200 text-white">
          <div className="relative max-w-7xl mx-auto px-7 py-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-               <a className="cursor-pointer" href="/">
+               <Link className="cursor-pointer" to="/">
                   <img src={logo} alt="site-logo" className="w-8 h-8" />
-               </a>
+               </Link>
 
                <h2 className="font-bold text-lg ml-1">Web Blog</h2>
             </div>
