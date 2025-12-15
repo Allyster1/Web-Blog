@@ -58,7 +58,7 @@ export default function Login() {
          </div>
          <input
             type="submit"
-            className="bg-[#1C4532] text-[#F7FAFC] cursor-pointer font-semibold text-1g leading-5 py-3 border rounded-4xl hover:bg-[#3a795b]"
+            className="bg-[#53946c] text-[#F7FAFC] cursor-pointer font-semibold text-1g leading-5 py-3 border rounded-4xl hover:bg-[#3a795b]"
             value="Sign in"
          />
 

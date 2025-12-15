@@ -59,14 +59,14 @@ export default function Register() {
 
          <input
             type="submit"
-            className="bg-[#1C4532] text-[#F7FAFC] font-semibold text-1g leading-5 py-3 border rounded-4xl"
+            className="bg-[#53946c] cursor-pointer text-[#F7FAFC] font-semibold text-1g leading-5 py-3 border rounded-4xl hover:bg-[#3a795b]"
             value="Sign up"
          />
 
          <p className="text-[#718096] text-sm text-center">
             Already have an account?
             <Link to="/auth/login" className="underline text-[#1C4532] ml-1">
-               Create now
+               Login now
             </Link>
          </p>
       </form>
