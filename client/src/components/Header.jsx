@@ -1,21 +1,16 @@
-import { Link } from "react-router";
-import logo from "../assets/logo.svg";
 import Navigation from "./navigation/Navigation";
+import ContainerLayout from "../layouts/ContainerLayout";
+import HeaderLogo from "./ui/HeaderLogo";
 
 export default function Header() {
    return (
       <header className="bg-[#53946c] border-b border-gray-200 text-white">
-         <div className="relative max-w-7xl mx-auto px-7 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-               <Link className="cursor-pointer" to="/">
-                  <img src={logo} alt="site-logo" className="w-8 h-8" />
-               </Link>
-
-               <h2 className="font-bold text-lg ml-1">Web Blog</h2>
-            </div>
-
+         <ContainerLayout className="py-4 flex items-center justify-between">
+            {/* Logo */}
+            <HeaderLogo />
+            {/* Nav */}
             <Navigation />
-         </div>
+         </ContainerLayout>
       </header>
    );
 }
