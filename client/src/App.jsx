@@ -11,7 +11,6 @@ function App() {
          <Route path="/auth" element={<AuthLayout />}>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
-            {/* <Route path="logout" logoutFunction /> */}
             {/* // <Route path="forgot-password" element={<ForgotPassword /> */}
          </Route>
       </Routes>
