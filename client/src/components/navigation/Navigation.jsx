@@ -4,19 +4,24 @@ import ListItem from "../ui/ListItem";
 import HamburgerLine from "../ui/HamburgerLine";
 import { logout } from "../../services/authService";
 import { useNavigate } from "react-router";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Navigation() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, accessToken, logout: clearAuth } = useAuth();
 
   const logoutHandler = async () => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) return;
+    if (!isAuthenticated || !accessToken) return;
 
-    await logout(accessToken);
-
-    localStorage.removeItem("accessToken");
-    navigate("/");
+    try {
+      await logout(accessToken);
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      clearAuth();
+      navigate("/");
+    }
   };
 
   return (
@@ -24,18 +29,24 @@ export default function Navigation() {
       <nav className="hidden md:flex">
         <ul className="flex gap-7">
           <ListItem link={"/"} text={"Articles"} />
-          <ListItem link={"#"} text={"Write"} />
+          <ListItem link={"/write"} text={"Write"} />
           <ListItem link={"about"} text={"About"} />
-          <ListItem link={"/auth/register"} text={"Register"} />
-          <ListItem link={"/auth/login"} text={"Login"} />
-          <li>
-            <button
-              onClick={logoutHandler}
-              className="text-sm text-white hover:text-[#E9FAC8] cursor-pointer hover:underline"
-            >
-              Logout
-            </button>
-          </li>
+          {!isAuthenticated && (
+            <>
+              <ListItem link={"/auth/register"} text={"Register"} />
+              <ListItem link={"/auth/login"} text={"Login"} />
+            </>
+          )}
+          {isAuthenticated && (
+            <li>
+              <button
+                onClick={logoutHandler}
+                className="text-sm text-white hover:text-[#E9FAC8] cursor-pointer hover:underline"
+              >
+                Logout
+              </button>
+            </li>
+          )}
         </ul>
       </nav>
 
@@ -55,10 +66,24 @@ export default function Navigation() {
         } absolute top-full right-0 opacity-90 overflow-hidden rounded-bl-3xl bg-[#087F5B] transition-all duration-300`}
       >
         <ul className="flex flex-col gap-4 px-7 py-4">
-          <ListItem link={"#"} text={"Articles"} />
-          <ListItem link={"#"} text={"Write"} />
-          <ListItem link={"/auth/register"} text={"Register"} />
-          <ListItem link={"/auth/login"} text={"Login"} />
+          <ListItem link={"/"} text={"Articles"} />
+          <ListItem link={"/write"} text={"Write"} />
+          {!isAuthenticated && (
+            <>
+              <ListItem link={"/auth/register"} text={"Register"} />
+              <ListItem link={"/auth/login"} text={"Login"} />
+            </>
+          )}
+          {isAuthenticated && (
+            <li>
+              <button
+                onClick={logoutHandler}
+                className="text-sm text-white hover:text-[#E9FAC8] cursor-pointer hover:underline"
+              >
+                Logout
+              </button>
+            </li>
+          )}
         </ul>
       </nav>
     </>
