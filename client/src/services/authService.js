@@ -1,6 +1,6 @@
 const BASE_URL = "http://localhost:5000/api/v1/auth";
 
-export async function login({ email, password }, signal) {
+export async function login({ email, password }, signal = undefined) {
   const response = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: {
@@ -13,13 +13,27 @@ export async function login({ email, password }, signal) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
+    // Extract validation error messages from details array if present
+    if (
+      error.details &&
+      Array.isArray(error.details) &&
+      error.details.length > 0
+    ) {
+      const firstError = error.details[0];
+      throw new Error(
+        firstError.msg || firstError.message || "Validation failed"
+      );
+    }
     throw new Error(error.message || "Login failed");
   }
 
   return response.json();
 }
 
-export async function register({ fullName, email, password, rePass }, signal) {
+export async function register(
+  { fullName, email, password, rePass },
+  signal = undefined
+) {
   const response = await fetch(`${BASE_URL}/register`, {
     method: "POST",
     headers: {
@@ -32,13 +46,23 @@ export async function register({ fullName, email, password, rePass }, signal) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
+    if (
+      error.details &&
+      Array.isArray(error.details) &&
+      error.details.length > 0
+    ) {
+      const firstError = error.details[0];
+      throw new Error(
+        firstError.msg || firstError.message || "Validation failed"
+      );
+    }
     throw new Error(error.message || "Register failed");
   }
 
   return response.json();
 }
 
-export async function logout(accessToken, signal) {
+export async function logout(accessToken, signal = undefined) {
   const response = await fetch(`${BASE_URL}/logout`, {
     method: "POST",
     headers: {
@@ -55,7 +79,7 @@ export async function logout(accessToken, signal) {
   return response.json();
 }
 
-export async function refreshAccessToken(signal) {
+export async function refreshAccessToken(signal = undefined) {
   const response = await fetch(`${BASE_URL}/refresh`, {
     method: "POST",
     credentials: "include",

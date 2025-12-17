@@ -19,6 +19,7 @@ export default function Register() {
       navigate("/");
     } catch (err) {
       setError(err.message || "Registration failed. Please try again.");
+      throw err;
     }
   };
 

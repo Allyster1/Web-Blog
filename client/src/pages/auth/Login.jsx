@@ -38,6 +38,10 @@ export default function Login() {
     } catch (err) {
       if (err.name !== "AbortError" && !signal.aborted) {
         setError(err.message || "Login failed. Please check your credentials.");
+        throw err;
+      }
+      if (err.name === "AbortError") {
+        throw err;
       }
     }
   };
