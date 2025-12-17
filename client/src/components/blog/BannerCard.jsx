@@ -1,4 +1,4 @@
-import mainCardImage from "../../assets/BannerImage.avif";
+import BannerImage from "../../assets/BannerImage.avif";
 import { Link } from "react-router";
 
 export default function BannerCard() {
@@ -8,7 +8,7 @@ export default function BannerCard() {
         <div className="relative w-full h-[300px] sm:h-[350px] md:aspect-21/9">
           <img
             className="absolute inset-0 w-full h-full object-cover"
-            src={mainCardImage}
+            src={BannerImage}
             alt="A Foodie's Guide to Europe"
           />
 
