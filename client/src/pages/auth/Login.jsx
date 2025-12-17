@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import InputField from "../../components/ui/InputField";
 import PasswordField from "../../components/ui/PasswordField";
 import { Link, useNavigate } from "react-router";
@@ -10,15 +10,35 @@ export default function Login() {
   const navigate = useNavigate();
   const { login: setAuthToken } = useAuth();
   const [error, setError] = useState("");
+  const abortControllerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const loginHandler = async (values) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     setError("");
     try {
-      const result = await login(values);
-      setAuthToken(result.accessToken);
-      navigate("/");
+      const result = await login(values, signal);
+      if (!signal.aborted) {
+        setAuthToken(result.accessToken);
+        navigate("/");
+      }
     } catch (err) {
-      setError(err.message || "Login failed. Please check your credentials.");
+      if (err.name !== "AbortError" && !signal.aborted) {
+        setError(err.message || "Login failed. Please check your credentials.");
+      }
     }
   };
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import ListItem from "../ui/ListItem";
 import HamburgerLine from "../ui/HamburgerLine";
@@ -10,17 +10,37 @@ export default function Navigation() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated, accessToken, logout: clearAuth } = useAuth();
+  const abortControllerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const logoutHandler = async () => {
     if (!isAuthenticated || !accessToken) return;
 
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     try {
-      await logout(accessToken);
+      await logout(accessToken, signal);
     } catch (error) {
-      console.error("Logout error:", error);
+      if (error.name !== "AbortError") {
+        console.error("Logout error:", error);
+      }
     } finally {
-      clearAuth();
-      navigate("/");
+      if (!signal.aborted) {
+        clearAuth();
+        navigate("/");
+      }
     }
   };
 

@@ -1,12 +1,13 @@
 const BASE_URL = "http://localhost:5000/api/v1/auth";
 
-export async function login({ email, password }) {
+export async function login({ email, password }, signal) {
   const response = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include",
+    signal,
     body: JSON.stringify({ email, password }),
   });
 
@@ -18,13 +19,14 @@ export async function login({ email, password }) {
   return response.json();
 }
 
-export async function register({ fullName, email, password, rePass }) {
+export async function register({ fullName, email, password, rePass }, signal) {
   const response = await fetch(`${BASE_URL}/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include",
+    signal,
     body: JSON.stringify({ fullName, email, password, rePass }),
   });
 
@@ -36,13 +38,14 @@ export async function register({ fullName, email, password, rePass }) {
   return response.json();
 }
 
-export async function logout(accessToken) {
+export async function logout(accessToken, signal) {
   const response = await fetch(`${BASE_URL}/logout`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
     credentials: "include",
+    signal,
   });
 
   if (!response.ok) {
