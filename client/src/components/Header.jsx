@@ -3,14 +3,9 @@ import ContainerLayout from "../layouts/ContainerLayout";
 import HeaderLogo from "./ui/HeaderLogo";
 
 export default function Header() {
-   return (
-      <header className="bg-[#53946c] border-b border-gray-200 text-white">
-         <ContainerLayout className="py-4 flex items-center justify-between">
-            {/* Logo */}
-            <HeaderLogo />
-            {/* Nav */}
-            <Navigation />
-         </ContainerLayout>
-      </header>
-   );
+  return (
+    <header className="bg-[#53946c] border-b border-gray-200 text-white">
+      <Navigation />
+    </header>
+  );
 }
