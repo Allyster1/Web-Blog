@@ -1,50 +1,14 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 
 import ListItem from "../ui/ListItem";
 import HamburgerLine from "../ui/HamburgerLine";
-import { logout } from "../../services/authService";
-import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import ContainerLayout from "../../layouts/ContainerLayout";
 import HeaderLogo from "../ui/HeaderLogo";
 
 export default function Navigation() {
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, accessToken, logout: clearAuth } = useAuth();
-  const abortControllerRef = useRef(null);
-
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
-
-  const logoutHandler = async () => {
-    if (!isAuthenticated || !accessToken) return;
-
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
-
-    try {
-      await logout(accessToken, signal);
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        console.error("Logout error:", error);
-      }
-    } finally {
-      if (!signal.aborted) {
-        clearAuth();
-        navigate("/");
-      }
-    }
-  };
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
@@ -62,14 +26,7 @@ export default function Navigation() {
               </>
             )}
             {isAuthenticated && (
-              <li>
-                <button
-                  onClick={logoutHandler}
-                  className="text-sm text-white hover:text-[#E9FAC8] cursor-pointer hover:underline"
-                >
-                  Logout
-                </button>
-              </li>
+              <ListItem link={"/auth/logout"} text={"Logout"} />
             )}
           </ul>
         </nav>
@@ -101,14 +58,7 @@ export default function Navigation() {
               </>
             )}
             {isAuthenticated && (
-              <li>
-                <button
-                  onClick={logoutHandler}
-                  className="text-sm text-white hover:text-[#E9FAC8] cursor-pointer hover:underline"
-                >
-                  Logout
-                </button>
-              </li>
+              <ListItem link={"/auth/logout"} text={"Logout"} />
             )}
           </ul>
         </ContainerLayout>

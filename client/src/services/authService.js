@@ -88,7 +88,9 @@ export async function refreshAccessToken(signal = undefined) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || "Failed to refresh token");
+    const authError = new Error(error.message || "Failed to refresh token");
+    authError.status = response.status;
+    throw authError;
   }
 
   return response.json();
