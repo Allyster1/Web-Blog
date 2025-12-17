@@ -13,7 +13,20 @@ export const createBlogValidation = [
     .withMessage("Content is required")
     .isLength({ min: 10 })
     .withMessage("Content must be at least 10 characters"),
-  body("image").optional().isURL().withMessage("Image must be a valid URL"),
+  body("image")
+    .optional()
+    .custom((value) => {
+      if (typeof value === "string" && value.trim() !== "") {
+        try {
+          new URL(value);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      return true;
+    })
+    .withMessage("Image must be a valid URL if provided as a string"),
 ];
 
 export const updateBlogValidation = [
@@ -31,7 +44,20 @@ export const updateBlogValidation = [
     .withMessage("Content cannot be empty")
     .isLength({ min: 10 })
     .withMessage("Content must be at least 10 characters"),
-  body("image").optional().isURL().withMessage("Image must be a valid URL"),
+  body("image")
+    .optional()
+    .custom((value) => {
+      if (typeof value === "string" && value.trim() !== "") {
+        try {
+          new URL(value);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      return true;
+    })
+    .withMessage("Image must be a valid URL if provided as a string"),
 ];
 
 export const commentValidation = [

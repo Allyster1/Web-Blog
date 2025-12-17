@@ -187,7 +187,7 @@ export async function addComment(blogId, userId, content) {
     .populate("comments.user", "fullName email");
 }
 
-export async function getUserBlogs(userId, page = 1, limit = 9) {
+export async function getUserBlogs(userId, page = 1, limit = 10) {
   const skip = (page - 1) * limit;
 
   const blogs = await Blog.find({ author: userId })

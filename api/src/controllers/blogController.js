@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validateMiddleware.js";
+import { uploadSingle } from "../middlewares/uploadMiddleware.js";
 import {
   createBlogValidation,
   updateBlogValidation,
@@ -45,12 +46,22 @@ blogController.get("/:id", async (req, res, next) => {
 blogController.post(
   "/",
   authMiddleware,
+  uploadSingle,
   createBlogValidation,
   validate,
   async (req, res, next) => {
     try {
-      const { title, content, image } = req.body;
-      const blog = await createBlog(title, content, image, req.user.id);
+      const { title, content } = req.body;
+      // If file was uploaded, use the file path, otherwise use the image URL from body
+      let imageUrl = "";
+      if (req.file) {
+        // Construct the URL to access the uploaded file
+        imageUrl = `/uploads/${req.file.filename}`;
+      } else if (req.body.image) {
+        // Use the provided URL
+        imageUrl = req.body.image;
+      }
+      const blog = await createBlog(title, content, imageUrl, req.user.id);
       res.status(201).json(blog);
     } catch (error) {
       next(error);
@@ -61,15 +72,22 @@ blogController.post(
 blogController.put(
   "/:id",
   authMiddleware,
+  uploadSingle,
   updateBlogValidation,
   validate,
   async (req, res, next) => {
     try {
-      const { title, content, image } = req.body;
+      const { title, content } = req.body;
       const updateData = {};
       if (title) updateData.title = title;
       if (content) updateData.content = content;
-      if (image !== undefined) updateData.image = image;
+
+      // Handle image: file upload takes precedence over URL
+      if (req.file) {
+        updateData.image = `/uploads/${req.file.filename}`;
+      } else if (req.body.image !== undefined) {
+        updateData.image = req.body.image;
+      }
 
       const blog = await updateBlog(req.params.id, req.user.id, updateData);
       res.status(200).json(blog);

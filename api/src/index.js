@@ -1,5 +1,7 @@
 import "dotenv/config";
 import express from "express";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 import corsMiddleware from "./config/cors.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
@@ -9,6 +11,9 @@ import connectDB from "./config/database.js";
 import router from "./config/routes.js";
 import { globalRateLimiter } from "./middlewares/rateLimiters/globalRateLimiter.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const PORT = process.env.PORT || 5000;
 
@@ -27,8 +32,12 @@ app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 
 app.use(cookieParser());
 
+app.use("/uploads", express.static(join(__dirname, "uploads")));
+
 app.use(globalRateLimiter);
 app.use(router);
 app.use(errorMiddleware);
 
-app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`Server is running on http://localhost:${PORT}`)
+);
