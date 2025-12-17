@@ -1,4 +1,4 @@
-import BannerImage from "../../assets/BannerImage.avif";
+import BannerImage from "../../assets/BannerCardImage.avif";
 import { Link } from "react-router";
 
 export default function BannerCard() {
