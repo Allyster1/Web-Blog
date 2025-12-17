@@ -1,12 +1,11 @@
-export default function InputField({
+export default function TextareaField({
   id,
-  type,
   placeholder,
   label,
   required = false,
   value,
   onChange,
-  autoComplete,
+  rows = 6,
 }) {
   return (
     <div className="flex flex-col">
@@ -16,16 +15,15 @@ export default function InputField({
       >
         {label}
       </label>
-      <input
-        type={type}
+      <textarea
         name={id}
         id={id}
         placeholder={placeholder}
         required={required}
         value={value}
         onChange={onChange}
-        autoComplete={autoComplete}
-        className="rounded-2xl px-4 py-2.5 border border-gray-300 focus:border-gray-500 focus:outline-none"
+        rows={rows}
+        className="rounded-2xl px-4 py-2.5 border border-gray-300 focus:border-gray-500 focus:outline-none resize-y min-h-[150px]"
       />
     </div>
   );
