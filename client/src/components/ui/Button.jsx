@@ -6,7 +6,7 @@ export default function Button({
   className = "",
   ...props
 }) {
-  const baseStyles = "px-6 py-3 font-semibold transition-colors";
+  const baseStyles = "px-6 py-3 font-semibold transition-colors cursor-pointer";
   const roundedClass = variant === "rounded" ? "rounded-3xl" : "rounded-2xl";
 
   const variants = {
