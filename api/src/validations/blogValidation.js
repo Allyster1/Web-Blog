@@ -1,5 +1,20 @@
 import { body } from "express-validator";
 
+/**
+ * Validates image URL if provided as a string
+ */
+const validateImageUrl = (value) => {
+  if (typeof value === "string" && value.trim() !== "") {
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  return true;
+};
+
 export const createBlogValidation = [
   body("title")
     .trim()
@@ -15,17 +30,7 @@ export const createBlogValidation = [
     .withMessage("Content must be at least 10 characters"),
   body("image")
     .optional()
-    .custom((value) => {
-      if (typeof value === "string" && value.trim() !== "") {
-        try {
-          new URL(value);
-          return true;
-        } catch {
-          return false;
-        }
-      }
-      return true;
-    })
+    .custom(validateImageUrl)
     .withMessage("Image must be a valid URL if provided as a string"),
 ];
 
@@ -46,17 +51,7 @@ export const updateBlogValidation = [
     .withMessage("Content must be at least 10 characters"),
   body("image")
     .optional()
-    .custom((value) => {
-      if (typeof value === "string" && value.trim() !== "") {
-        try {
-          new URL(value);
-          return true;
-        } catch {
-          return false;
-        }
-      }
-      return true;
-    })
+    .custom(validateImageUrl)
     .withMessage("Image must be a valid URL if provided as a string"),
 ];
 
