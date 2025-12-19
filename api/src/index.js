@@ -1,7 +1,5 @@
 import "dotenv/config";
 import express from "express";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
 import corsMiddleware from "./config/cors.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
