@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 export default function BlogCard({
   img,
   title,
@@ -5,16 +7,18 @@ export default function BlogCard({
   date,
   variant = "large",
   href = "#",
+  id,
 }) {
   const isLarge = variant === "large";
   const isHorizontal = variant === "horizontal";
+  const linkTo = id ? `/blog/${id}` : href;
 
   if (isLarge) {
     return (
       <div className="bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-        <a href={href} className="block">
+        <Link to={linkTo} className="block">
           <img
-            className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
+            className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
             src={img}
             alt={title}
           />
@@ -27,7 +31,7 @@ export default function BlogCard({
               </span>
             </div>
           </div>
-        </a>
+        </Link>
       </div>
     );
   }
@@ -35,10 +39,10 @@ export default function BlogCard({
   if (isHorizontal) {
     return (
       <div className="bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-        <a href={href} className="block sm:flex">
+        <Link to={linkTo} className="block sm:flex">
           <div className="w-full sm:w-48 h-48 shrink-0">
             <img
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
               src={img}
               alt={title}
             />
@@ -52,7 +56,7 @@ export default function BlogCard({
               </span>
             </div>
           </div>
-        </a>
+        </Link>
       </div>
     );
   }
