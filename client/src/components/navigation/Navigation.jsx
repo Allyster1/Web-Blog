@@ -18,7 +18,12 @@ export default function Navigation() {
         <nav className="hidden md:flex">
           <ul className="flex gap-7">
             <ListItem link={"/"} text={"Articles"} />
-            <ListItem link={"/write"} text={"Write"} />
+            {isAuthenticated && (
+              <>
+                <ListItem link={"/blog/write"} text={"Write"} />
+                <ListItem link={"/blog/myposts"} text={"My Posts"} />
+              </>
+            )}
             {isAdmin && <ListItem link={"/admin"} text={"Admin"} />}
             {!isAuthenticated && (
               <>
@@ -51,7 +56,12 @@ export default function Navigation() {
         <ContainerLayout>
           <ul className="flex flex-col gap-4 px-4 py-4">
             <ListItem link={"/"} text={"Articles"} />
-            <ListItem link={"/write"} text={"Write"} />
+            {isAuthenticated && (
+              <>
+                <ListItem link={"/blog/write"} text={"Write"} />
+                <ListItem link={"/blog/myposts"} text={"My Posts"} />
+              </>
+            )}
             {isAdmin && <ListItem link={"/admin"} text={"Admin"} />}
             {!isAuthenticated && (
               <>
