@@ -31,7 +31,8 @@ export async function getAllBlogs(page = 1, limit = 9, sortBy = "createdAt") {
 
   const sort = sortOptions[sortBy] || sortOptions.createdAt;
 
-  const blogs = await Blog.find()
+  // Only show approved blogs
+  const blogs = await Blog.find({ status: "approved" })
     .populate("author", "fullName email")
     .populate("likes", "fullName")
     .populate("dislikes", "fullName")
@@ -40,7 +41,7 @@ export async function getAllBlogs(page = 1, limit = 9, sortBy = "createdAt") {
     .skip(skip)
     .limit(limit);
 
-  const total = await Blog.countDocuments();
+  const total = await Blog.countDocuments({ status: "approved" });
 
   return {
     blogs,
@@ -54,7 +55,8 @@ export async function getAllBlogs(page = 1, limit = 9, sortBy = "createdAt") {
 }
 
 export async function getBlogById(blogId) {
-  const blog = await Blog.findById(blogId)
+  // Only allow viewing approved blogs (or admins can view any)
+  const blog = await Blog.findOne({ _id: blogId, status: "approved" })
     .populate("author", "fullName email")
     .populate("likes", "fullName email")
     .populate("dislikes", "fullName email")
@@ -110,6 +112,11 @@ export async function likeBlog(blogId, userId) {
     throw new BadRequestError("Blog not found");
   }
 
+  // Only allow liking approved blogs
+  if (blog.status !== "approved") {
+    throw new BadRequestError("Cannot like a blog that is not approved");
+  }
+
   const hasLiked = blog.likes.some((id) => id.toString() === userId.toString());
   const hasDisliked = blog.dislikes.some(
     (id) => id.toString() === userId.toString()
@@ -139,6 +146,11 @@ export async function dislikeBlog(blogId, userId) {
 
   if (!blog) {
     throw new BadRequestError("Blog not found");
+  }
+
+  // Only allow disliking approved blogs
+  if (blog.status !== "approved") {
+    throw new BadRequestError("Cannot dislike a blog that is not approved");
   }
 
   const hasLiked = blog.likes.some((id) => id.toString() === userId.toString());
@@ -172,6 +184,11 @@ export async function addComment(blogId, userId, content) {
 
   if (!blog) {
     throw new BadRequestError("Blog not found");
+  }
+
+  // Only allow commenting on approved blogs
+  if (blog.status !== "approved") {
+    throw new BadRequestError("Cannot comment on a blog that is not approved");
   }
 
   blog.comments.push({
@@ -210,4 +227,61 @@ export async function getUserBlogs(userId, page = 1, limit = 10) {
       pages: Math.ceil(total / limit),
     },
   };
+}
+
+/**
+ * Get all pending blogs (admin only)
+ * @param {number} page - Page number
+ * @param {number} limit - Items per page
+ * @returns {Promise<Object>} Pending blogs with pagination
+ */
+export async function getPendingBlogs(page = 1, limit = 9) {
+  const skip = (page - 1) * limit;
+
+  const blogs = await Blog.find({ status: "pending" })
+    .populate("author", "fullName email")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Blog.countDocuments({ status: "pending" });
+
+  return {
+    blogs,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  };
+}
+
+/**
+ * Update blog status (admin only)
+ * @param {string} blogId - Blog ID
+ * @param {string} status - New status (approved/rejected)
+ * @returns {Promise<Object>} Updated blog
+ */
+export async function updateBlogStatus(blogId, status) {
+  const blog = await Blog.findById(blogId);
+
+  if (!blog) {
+    throw new BadRequestError("Blog not found");
+  }
+
+  if (!["pending", "approved", "rejected"].includes(status)) {
+    throw new BadRequestError(
+      "Invalid status. Must be 'pending', 'approved', or 'rejected'"
+    );
+  }
+
+  blog.status = status;
+  await blog.save();
+
+  return await Blog.findById(blogId)
+    .populate("author", "fullName email")
+    .populate("likes", "fullName email")
+    .populate("dislikes", "fullName email")
+    .populate("comments.user", "fullName email");
 }

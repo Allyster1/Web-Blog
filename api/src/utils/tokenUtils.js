@@ -7,11 +7,11 @@ import { UnauthorizedError } from "../utils/AppError.js";
 const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
 
 export async function hashToken(token) {
-   return await bcrypt.hash(token, saltRounds);
+  return await bcrypt.hash(token, saltRounds);
 }
 
 export async function verifyToken(token, hashedToken) {
-   return await bcrypt.compare(token, hashedToken);
+  return await bcrypt.compare(token, hashedToken);
 }
 
 /**
@@ -23,12 +23,13 @@ export async function verifyToken(token, hashedToken) {
  * @returns {string} A signed JWT access token valid for 15 minutes.
  */
 export function generateAccessToken(user) {
-   const payload = {
-      id: user._id,
-      email: user.email,
-   };
+  const payload = {
+    id: user._id,
+    email: user.email,
+    role: user.role || "user",
+  };
 
-   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" });
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" });
 }
 
 /**
@@ -38,11 +39,11 @@ export function generateAccessToken(user) {
  * @returns {{ token: string, tokenId: string, expiresAt: Date }} An object containing the generated refresh token, its identifier prefix, and expiration date.
  */
 export function generateRefreshToken(expiryDays = 7) {
-   const token = crypto.randomBytes(64).toString("hex");
-   const tokenId = token.substring(0, 32);
-   const expiresAt = new Date();
-   expiresAt.setDate(expiresAt.getDate() + expiryDays);
-   return { token, tokenId, expiresAt };
+  const token = crypto.randomBytes(64).toString("hex");
+  const tokenId = token.substring(0, 32);
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + expiryDays);
+  return { token, tokenId, expiresAt };
 }
 
 /**
@@ -53,7 +54,7 @@ export function generateRefreshToken(expiryDays = 7) {
  * @throws {Error} Throws if the token is invalid or expired.
  */
 export function verifyAccessToken(token) {
-   return jwt.verify(token, process.env.JWT_SECRET);
+  return jwt.verify(token, process.env.JWT_SECRET);
 }
 
 /**
@@ -66,44 +67,47 @@ export function verifyAccessToken(token) {
  * @throws {Error} Throws if the old token is invalid or expired.
  */
 export async function rotateRefreshToken(oldToken) {
-   // Extract tokenId (first 32 chars) for efficient indexed lookup
-   const tokenId = oldToken.substring(0, 32);
+  // Extract tokenId (first 32 chars) for efficient indexed lookup
+  const tokenId = oldToken.substring(0, 32);
 
-   // Query user by indexed tokenId instead of scanning all users
-   const userFound = await User.findOne({
-      "refreshToken.tokenId": tokenId,
-   }).select("+refreshToken");
+  // Query user by indexed tokenId instead of scanning all users
+  const userFound = await User.findOne({
+    "refreshToken.tokenId": tokenId,
+  }).select("+refreshToken");
 
-   if (!userFound || !userFound.refreshToken || !userFound.refreshToken.token) {
-      throw new UnauthorizedError("Invalid refresh token");
-   }
+  if (!userFound || !userFound.refreshToken || !userFound.refreshToken.token) {
+    throw new UnauthorizedError("Invalid refresh token");
+  }
 
-   // Verify the token hash matches
-   const isValidToken = await verifyToken(oldToken, userFound.refreshToken.token);
-   if (!isValidToken) {
-      throw new UnauthorizedError("Invalid refresh token");
-   }
+  // Verify the token hash matches
+  const isValidToken = await verifyToken(
+    oldToken,
+    userFound.refreshToken.token
+  );
+  if (!isValidToken) {
+    throw new UnauthorizedError("Invalid refresh token");
+  }
 
-   // Check expiration
-   if (new Date() > userFound.refreshToken.expiresAt) {
-      userFound.refreshToken = null;
-      await userFound.save();
-      throw new UnauthorizedError("Invalid refresh token");
-   }
+  // Check expiration
+  if (new Date() > userFound.refreshToken.expiresAt) {
+    userFound.refreshToken = null;
+    await userFound.save();
+    throw new UnauthorizedError("Invalid refresh token");
+  }
 
-   // Generate new tokens
-   const { token, tokenId: newTokenId, expiresAt } = generateRefreshToken();
-   const accessToken = generateAccessToken(userFound);
+  // Generate new tokens
+  const { token, tokenId: newTokenId, expiresAt } = generateRefreshToken();
+  const accessToken = generateAccessToken(userFound);
 
-   // Store hashed token and tokenId
-   userFound.refreshToken = {
-      token: await hashToken(token),
-      tokenId: newTokenId,
-      expiresAt,
-   };
-   await userFound.save();
+  // Store hashed token and tokenId
+  userFound.refreshToken = {
+    token: await hashToken(token),
+    tokenId: newTokenId,
+    expiresAt,
+  };
+  await userFound.save();
 
-   return { user: userFound, accessToken, refreshToken: token };
+  return { user: userFound, accessToken, refreshToken: token };
 }
 
 /**
@@ -117,13 +121,13 @@ export async function rotateRefreshToken(oldToken) {
 const isProduction = process.env.NODE_ENV === "production";
 
 export function attachTokensToResponse(res, accessToken, refreshToken) {
-   res.setHeader("x-access-token", accessToken);
+  res.setHeader("x-access-token", accessToken);
 
-   res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: "/",
-   });
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "None" : "Lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    path: "/",
+  });
 }

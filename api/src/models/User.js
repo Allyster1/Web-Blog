@@ -52,6 +52,11 @@ const userSchema = new Schema(
       tokenId: { type: String, select: false, index: true },
       expiresAt: { type: Date, select: false },
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
   {
     timestamps: true,
