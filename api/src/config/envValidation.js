@@ -18,7 +18,7 @@ export function validateEnvVars() {
   ];
 
   // Required only in production
-  const requiredInProduction = ["MONGODB_URI", "FRONTEND_URL"];
+  const requiredInProduction = ["MONGODB_URI"];
 
   // Check required variables
   for (const varName of required) {
@@ -41,6 +41,15 @@ export function validateEnvVars() {
         warnings.push(varName);
       }
     }
+  }
+
+  if (
+    isProduction &&
+    (!process.env.FRONTEND_URL || process.env.FRONTEND_URL.trim() === "")
+  ) {
+    warnings.push(
+      "FRONTEND_URL is not set in production. CORS will allow all origins. Set this when you have a domain."
+    );
   }
 
   // Validate JWT_SECRET length (should be at least 32 characters for security)
