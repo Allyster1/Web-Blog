@@ -33,7 +33,8 @@ app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 
 app.use(cookieParser());
 
-app.use("/uploads", express.static(join(__dirname, "uploads")));
+// Remove local uploads serving - images are now served from Cloudinary
+// app.use("/uploads", express.static(join(__dirname, "uploads")));
 
 app.use(globalRateLimiter);
 app.use(router);
