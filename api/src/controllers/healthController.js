@@ -5,7 +5,7 @@ const healthController = Router();
 
 healthController.get("/", async (req, res, next) => {
   try {
-    const healthStatus = getHealthStatus();
+    const healthStatus = await getHealthStatus();
     const statusCode = healthStatus.status === "healthy" ? 200 : 503;
     res.status(statusCode).json(healthStatus);
   } catch (error) {
