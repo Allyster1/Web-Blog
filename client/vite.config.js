@@ -18,7 +18,6 @@ export default defineConfig({
             const cookies = proxyRes.headers["set-cookie"];
             if (cookies) {
               proxyRes.headers["set-cookie"] = cookies.map((cookie) => {
-                // Remove Secure flag and Domain attribute, clean up any double semicolons
                 return cookie
                   .replace(/;\s*Secure/gi, "")
                   .replace(/Domain=[^;]+/gi, "")
@@ -28,8 +27,6 @@ export default defineConfig({
             }
           });
         },
-        // Don't rewrite the path - backend routes expect /api prefix
-        // Cookies are automatically forwarded by Vite proxy when credentials: 'include' is used
       },
     },
   },
