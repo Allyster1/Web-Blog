@@ -15,12 +15,12 @@ export default function BlogLayout() {
       <ContainerLayout>
         <BannerCard />
         <PostHeader
-          heading="Popular Post"
+          heading="Trending Post"
           text="Ideas, trends, and inspiration for a brighter future"
         />
         <PopularPosts />
         <PostHeader
-          heading="Trending Post"
+          heading="Latest Posts"
           text="Discover how innovation and creativity drive meaningful change"
         />
         <LatestPosts />
