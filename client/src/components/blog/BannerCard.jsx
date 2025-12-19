@@ -1,40 +1,28 @@
 import BannerImage from "../../assets/BannerCardImage.avif";
-import { Link } from "react-router";
 
 export default function BannerCard() {
   return (
-    <div className="cursor-pointer relative mt-12 w-auto max-w-3x1 mx-auto rounded-xl overflow-hidden">
-      <Link to="/auth/login">
-        <div className="relative w-full h-[300px] sm:h-[350px] md:aspect-21/9">
-          <img
-            className="absolute inset-0 w-full h-full object-cover"
-            src={BannerImage}
-            alt="A Foodie's Guide to Europe"
-          />
+    <div className="relative mt-12 w-auto max-w-5xl mx-auto rounded-xl overflow-hidden">
+      <div className="relative w-full h-[400px] sm:h-[450px] md:h-[500px] lg:h-[600px]">
+        <img
+          className="absolute inset-0 w-full h-full object-cover"
+          src={BannerImage}
+          alt="Banner"
+        />
 
-          <div className="absolute inset-0 bg-linear-to-br opacity-60 from-[#9ba09d] via-[#0b0e0c] to-[#3e4144cc]" />
+        <div className="absolute inset-0 bg-linear-to-br opacity-60 from-[#9ba09d] via-[#0b0e0c] to-[#3e4144cc]" />
 
-          <div className="absolute inset-0 flex flex-col p-4 sm:p-6 md:p-8 text-white">
-            <div className="w-full md:w-1/2">
-              <h1 className="text-[1rem] sm:text-[1.2rem] md:text-[1.5rem] lg:text-[1.5rem] font-bold leading-tight">
-                A Brief Look at Photography’s Evolution: Photography as an Art
-                Form
-              </h1>
-            </div>
-
-            <div className="mt-auto w-full flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 sm:gap-0">
-              <p className="text-sm md:text-base">Nov 13, 2025</p>
-
-              <div className="flex items-center gap-3 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 self-start sm:self-end">
-                <div className="text-sm text-white">
-                  <p className="font-semibold">Allyster1</p>
-                  <p className="text-xs opacity-90">Author</p>
-                </div>
-              </div>
-            </div>
+        <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6 md:p-8 text-white">
+          <div className="text-center space-y-4 sm:space-y-5 md:space-y-6">
+            <h1 className="text-[2rem] sm:text-[2.5rem] md:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem] font-bold leading-tight drop-shadow-lg">
+              Where Stories Come to Life
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl opacity-90 font-light">
+              Discover. Write. Inspire.
+            </p>
           </div>
         </div>
-      </Link>
+      </div>
     </div>
   );
 }
