@@ -2,12 +2,14 @@ import { useState } from "react";
 import ListItem from "../ui/ListItem";
 import HamburgerLine from "../ui/HamburgerLine";
 import { useAuth } from "../../hooks/useAuth";
+import { getUserRoleFromToken } from "../../utils/tokenUtils";
 import ContainerLayout from "../../layouts/ContainerLayout";
 import HeaderLogo from "../ui/HeaderLogo";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, accessToken } = useAuth();
+  const isAdmin = accessToken && getUserRoleFromToken(accessToken) === "admin";
 
   return (
     <>
@@ -17,6 +19,7 @@ export default function Navigation() {
           <ul className="flex gap-7">
             <ListItem link={"/"} text={"Articles"} />
             <ListItem link={"/write"} text={"Write"} />
+            {isAdmin && <ListItem link={"/admin"} text={"Admin"} />}
             {!isAuthenticated && (
               <>
                 <ListItem link={"/auth/register"} text={"Register"} />
@@ -49,6 +52,7 @@ export default function Navigation() {
           <ul className="flex flex-col gap-4 px-4 py-4">
             <ListItem link={"/"} text={"Articles"} />
             <ListItem link={"/write"} text={"Write"} />
+            {isAdmin && <ListItem link={"/admin"} text={"Admin"} />}
             {!isAuthenticated && (
               <>
                 <ListItem link={"/auth/register"} text={"Register"} />
