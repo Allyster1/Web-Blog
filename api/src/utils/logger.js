@@ -31,8 +31,8 @@ const format = winston.format.combine(
 );
 
 // Define transports (where logs go)
+// Only console transport - logs will be visible in Render dashboard
 const transports = [
-  // Console transport (always enabled)
   new winston.transports.Console({
     format: winston.format.combine(
       winston.format.colorize(),
@@ -43,32 +43,11 @@ const transports = [
   }),
 ];
 
-// Add file transport for production
-if (process.env.NODE_ENV === "production") {
-  transports.push(
-    // Error log file
-    new winston.transports.File({
-      filename: "logs/error.log",
-      level: "error",
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      ),
-    }),
-    // Combined log file
-    new winston.transports.File({
-      filename: "logs/combined.log",
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      ),
-    })
-  );
-}
-
 // Create the logger
 const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || (process.env.NODE_ENV === "production" ? "info" : "debug"),
+  level:
+    process.env.LOG_LEVEL ||
+    (process.env.NODE_ENV === "production" ? "info" : "debug"),
   levels,
   format,
   transports,
