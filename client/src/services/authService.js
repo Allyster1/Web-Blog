@@ -1,5 +1,3 @@
-// Use relative path to go through Vite proxy in development
-// In production, this will be handled by your deployment setup
 const BASE_URL = "/api/v1/auth";
 
 export async function login({ email, password }, signal = undefined) {
@@ -15,7 +13,6 @@ export async function login({ email, password }, signal = undefined) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    // Extract validation error messages from details array if present
     if (
       error.details &&
       Array.isArray(error.details) &&
@@ -89,16 +86,23 @@ export async function refreshAccessToken(signal = undefined) {
   });
 
   if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+
+    if (response.status === 401 && error.message === "Refresh token missing") {
+      try {
+        document.cookie =
+          "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      } catch (_) {}
+      return null;
+    }
+
     if (response.status === 401) {
       try {
         document.cookie =
           "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (_) {}
     }
 
-    const error = await response.json().catch(() => ({}));
     const authError = new Error(error.message || "Failed to refresh token");
     authError.status = response.status;
     throw authError;
