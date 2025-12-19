@@ -11,6 +11,7 @@ import Write from "./pages/Write";
 import Edit from "./pages/Edit";
 import BlogDetail from "./pages/BlogDetail";
 import AdminDashboard from "./pages/AdminDashboard";
+import MyPosts from "./pages/MyPosts";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -19,15 +20,16 @@ export default function App() {
       <Route path="/" element={<BlogLayout />}></Route>
 
       <Route element={<AuthGuard />}>
-        <Route path="/write" element={<Write />} />
-        <Route path="/edit/:id" element={<Edit />} />
+        <Route path="/blog/write" element={<Write />} />
+        <Route path="/blog/:id/edit" element={<Edit />} />
+        <Route path="/blog/myposts" element={<MyPosts />} />
       </Route>
 
       <Route element={<AdminGuard />}>
         <Route path="/admin" element={<AdminDashboard />} />
       </Route>
 
-      <Route path="/blog/:id" element={<BlogDetail />} />
+      <Route path="/blog/:id/details" element={<BlogDetail />} />
 
       <Route path="/auth" element={<AuthLayout />}>
         <Route element={<GuestGuard />}>
