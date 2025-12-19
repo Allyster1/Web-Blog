@@ -31,7 +31,6 @@ export async function getAllBlogs(page = 1, limit = 9, sortBy = "createdAt") {
 
   const sort = sortOptions[sortBy] || sortOptions.createdAt;
 
-  // Only show approved blogs
   const blogs = await Blog.find({ status: "approved" })
     .populate("author", "fullName email")
     .populate("likes", "fullName")
@@ -118,7 +117,6 @@ export async function likeBlog(blogId, userId) {
     throw new BadRequestError("Blog not found");
   }
 
-  // Only allow liking approved blogs
   if (blog.status !== "approved") {
     throw new BadRequestError("Cannot like a blog that is not approved");
   }
@@ -154,7 +152,6 @@ export async function dislikeBlog(blogId, userId) {
     throw new BadRequestError("Blog not found");
   }
 
-  // Only allow disliking approved blogs
   if (blog.status !== "approved") {
     throw new BadRequestError("Cannot dislike a blog that is not approved");
   }
@@ -213,7 +210,11 @@ export async function addComment(blogId, userId, content) {
 export async function getUserBlogs(userId, page = 1, limit = 10) {
   const skip = (page - 1) * limit;
 
-  const blogs = await Blog.find({ author: userId })
+  // Exclude rejected blogs from user's blog list
+  const blogs = await Blog.find({
+    author: userId,
+    status: { $ne: "rejected" }, // Exclude rejected blogs
+  })
     .populate("author", "fullName email")
     .populate("likes", "fullName")
     .populate("dislikes", "fullName")
@@ -222,7 +223,10 @@ export async function getUserBlogs(userId, page = 1, limit = 10) {
     .skip(skip)
     .limit(limit);
 
-  const total = await Blog.countDocuments({ author: userId });
+  const total = await Blog.countDocuments({
+    author: userId,
+    status: { $ne: "rejected" },
+  });
 
   return {
     blogs,
@@ -251,34 +255,6 @@ export async function getPendingBlogs(page = 1, limit = 9) {
     .limit(limit);
 
   const total = await Blog.countDocuments({ status: "pending" });
-
-  return {
-    blogs,
-    pagination: {
-      page,
-      limit,
-      total,
-      pages: Math.ceil(total / limit),
-    },
-  };
-}
-
-/**
- * Get all rejected blogs (admin only)
- * @param {number} page - Page number
- * @param {number} limit - Items per page
- * @returns {Promise<Object>} Rejected blogs with pagination
- */
-export async function getRejectedBlogs(page = 1, limit = 9) {
-  const skip = (page - 1) * limit;
-
-  const blogs = await Blog.find({ status: "rejected" })
-    .populate("author", "fullName email")
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit);
-
-  const total = await Blog.countDocuments({ status: "rejected" });
 
   return {
     blogs,
