@@ -77,7 +77,7 @@ export default function Edit() {
       }
 
       await updateBlog(id, blogData, accessToken);
-      navigate(`/blog/${id}`);
+      navigate(`/blog/${id}/details`);
     } catch (err) {
       setError(err.message || "Failed to update blog. Please try again.");
     } finally {
@@ -180,7 +180,7 @@ export default function Edit() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => navigate(`/blog/${id}`)}
+              onClick={() => navigate(`/blog/${id}/details`)}
               disabled={isSubmitting}
             >
               Cancel
