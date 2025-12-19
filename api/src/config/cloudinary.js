@@ -92,6 +92,7 @@ const fileFilter = (req, file, cb) => {
     "image/png",
     "image/gif",
     "image/webp",
+    "image/avif",
   ];
 
   if (allowedMimes.includes(file.mimetype)) {
@@ -99,7 +100,7 @@ const fileFilter = (req, file, cb) => {
   } else {
     cb(
       new Error(
-        "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed."
+        "Invalid file type. Only JPEG, PNG, GIF, WebP, and AVIF images are allowed."
       ),
       false
     );
