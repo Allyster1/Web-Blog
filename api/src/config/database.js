@@ -54,12 +54,8 @@ export default async function connectDB() {
 
       logger.info("MongoDB connected successfully!");
 
-      // Setup graceful shutdown
-      process.on("SIGINT", async () => {
-        await mongoose.connection.close();
-        logger.info("MongoDB connection closed gracefully");
-        process.exit(0);
-      });
+      // Note: Graceful shutdown is now handled in utils/gracefulShutdown.js
+      // This avoids duplicate signal handlers
 
       return;
     } catch (error) {
