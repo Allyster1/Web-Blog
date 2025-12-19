@@ -14,13 +14,23 @@ export function AuthProvider({ children }) {
       try {
         const data = await refreshAccessToken(abortController.signal);
 
-        if (!abortController.signal.aborted) {
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        if (data && data.accessToken) {
           setAccessToken(data.accessToken);
           setIsAuthenticated(true);
+        } else {
+          setAccessToken(null);
+          setIsAuthenticated(false);
         }
       } catch (error) {
         if (error.name === "AbortError") {
           return;
+        }
+        if (error.status !== 401 || error.message !== "Refresh token missing") {
+          console.error("Auth initialization error:", error);
         }
         if (!abortController.signal.aborted) {
           setAccessToken(null);
