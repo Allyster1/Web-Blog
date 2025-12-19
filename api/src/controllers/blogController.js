@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { optionalAuthMiddleware } from "../middlewares/optionalAuthMiddleware.js";
 import { validate } from "../middlewares/validateMiddleware.js";
 import {
   uploadSingle,
@@ -37,9 +38,11 @@ blogController.get("/", async (req, res, next) => {
   }
 });
 
-blogController.get("/:id", async (req, res, next) => {
+blogController.get("/:id", optionalAuthMiddleware, async (req, res, next) => {
   try {
-    const blog = await getBlogById(req.params.id);
+    // Pass user if authenticated (for admin access to pending blogs)
+    const user = req.user || null;
+    const blog = await getBlogById(req.params.id, user);
     res.status(200).json(blog);
   } catch (error) {
     next(error);
@@ -106,7 +109,8 @@ blogController.put(
 
 blogController.delete("/:id", authMiddleware, async (req, res, next) => {
   try {
-    const result = await deleteBlog(req.params.id, req.user.id);
+    // Regular users can only delete their own blogs
+    const result = await deleteBlog(req.params.id, req.user.id, false);
     res.status(200).json(result);
   } catch (error) {
     next(error);

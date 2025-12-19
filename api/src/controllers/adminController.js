@@ -1,7 +1,12 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { adminMiddleware } from "../middlewares/adminMiddleware.js";
-import { getPendingBlogs, updateBlogStatus } from "../services/blogService.js";
+import {
+  getPendingBlogs,
+  getRejectedBlogs,
+  updateBlogStatus,
+  deleteBlog,
+} from "../services/blogService.js";
 
 const adminController = Router();
 
@@ -57,6 +62,44 @@ adminController.patch(
         message: `Blog ${status} successfully`,
         blog,
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * GET /api/v1/admin/rejected-blogs
+ * Get all rejected blogs
+ */
+adminController.get(
+  "/rejected-blogs",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res, next) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 9;
+      const result = await getRejectedBlogs(page, limit);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * DELETE /api/v1/admin/blogs/:id
+ * Delete a blog (admin only - can delete any blog)
+ */
+adminController.delete(
+  "/blogs/:id",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res, next) => {
+    try {
+      const result = await deleteBlog(req.params.id, req.user.id, true);
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }
