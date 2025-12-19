@@ -13,7 +13,10 @@ import {
 import { validate } from "../middlewares/validateMiddleware.js";
 import { authRateLimiter } from "../middlewares/rateLimiters/authRateLimiter.js";
 import { refreshRateLimiter } from "../middlewares/rateLimiters/refreshRateLimiter.js";
-import { attachTokensToResponse } from "../utils/tokenUtils.js";
+import {
+  attachTokensToResponse,
+  getRefreshTokenCookieOptions,
+} from "../utils/tokenUtils.js";
 
 const userController = Router();
 
@@ -47,22 +50,10 @@ userController.post(
   loginValidation,
   validate,
   async (req, res, next) => {
-    const isProduction = process.env.NODE_ENV === "production";
-    const clearCookieOptions = {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-      path: "/",
-      ...(isProduction &&
-        process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
-    };
-
     try {
       const { email, password } = req.body;
       const { accessToken, refreshToken } = await login(email, password);
 
-      // Clear any old cookie before setting a new one
-      res.clearCookie("refreshToken", clearCookieOptions);
       attachTokensToResponse(res, accessToken, refreshToken);
 
       res.status(200).json({ accessToken });
@@ -76,15 +67,7 @@ userController.post("/logout", authMiddleware, async (req, res, next) => {
   try {
     await logout(req.user.id);
 
-    const isProduction = process.env.NODE_ENV === "production";
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-      path: "/",
-      ...(isProduction &&
-        process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
-    });
+    res.clearCookie("refreshToken", getRefreshTokenCookieOptions());
 
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
@@ -93,36 +76,31 @@ userController.post("/logout", authMiddleware, async (req, res, next) => {
 });
 
 userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
-  const isProduction = process.env.NODE_ENV === "production";
-  const clearCookieOptions = {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
-    path: "/",
-    ...(isProduction &&
-      process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
-  };
+  const cookieOptions = getRefreshTokenCookieOptions();
 
   try {
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Refresh endpoint - Cookies received:", {
+        hasCookies: !!req.cookies,
+        cookieKeys: req.cookies ? Object.keys(req.cookies) : [],
+        hasRefreshToken: !!req.cookies?.refreshToken,
+        refreshTokenLength: req.cookies?.refreshToken?.length || 0,
+      });
+    }
+
     const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
     if (!refreshToken) {
-      // Clear any stale cookie
-      res.clearCookie("refreshToken", clearCookieOptions);
       return res.status(401).json({ message: "Refresh token missing" });
     }
 
     const tokens = await refreshUserToken(refreshToken);
 
-    // Clear the old cookie first, then set the new one to ensure proper update
-    res.clearCookie("refreshToken", clearCookieOptions);
-
     attachTokensToResponse(res, tokens.accessToken, tokens.refreshToken);
 
     res.status(200).json({ accessToken: tokens.accessToken });
   } catch (error) {
-    // Clear invalid/stale cookie on error
-    res.clearCookie("refreshToken", clearCookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
     next(error);
   }
 });
