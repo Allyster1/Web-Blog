@@ -92,7 +92,9 @@ export async function refreshAccessToken(signal = undefined) {
       try {
         document.cookie =
           "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      } catch (_) {}
+      } catch (e) {
+        alert(e.message);
+      }
       return null;
     }
 
@@ -100,7 +102,9 @@ export async function refreshAccessToken(signal = undefined) {
       try {
         document.cookie =
           "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      } catch (_) {}
+      } catch (e) {
+        alert(e.message);
+      }
     }
 
     const authError = new Error(error.message || "Failed to refresh token");
