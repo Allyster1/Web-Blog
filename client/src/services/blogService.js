@@ -1,6 +1,39 @@
 const BASE_URL = "/api/v1/blogs";
 
 /**
+ * Get all blogs with optional sorting and pagination
+ * @param {number} page - Page number (default: 1)
+ * @param {number} limit - Number of blogs per page (default: 9)
+ * @param {string} sortBy - Sort field (default: "createdAt")
+ * @returns {Promise<Object>} Blogs data with pagination
+ */
+export async function getAllBlogs(page = 1, limit = 9, sortBy = "createdAt") {
+  try {
+    const response = await fetch(
+      `${BASE_URL}?page=${page}&limit=${limit}&sortBy=${sortBy}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Failed to fetch blogs");
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error(
+        "Unable to connect to the server. Please ensure the API server is running."
+      );
+    }
+    throw error;
+  }
+}
+
+/**
  * Create a new blog post
  * @param {Object} blogData - Blog data { title, content, image (optional file or URL) }
  * @param {string} accessToken - Authentication token
@@ -63,12 +96,19 @@ export async function createBlog(blogData, accessToken) {
 /**
  * Get a blog by ID
  * @param {string} blogId - Blog ID
+ * @param {string} accessToken - Optional access token (for admin access to pending blogs)
  * @returns {Promise<Object>} Blog data
  */
-export async function getBlogById(blogId) {
+export async function getBlogById(blogId, accessToken = null) {
   try {
+    const headers = {};
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+
     const response = await fetch(`${BASE_URL}/${blogId}`, {
       method: "GET",
+      headers,
       credentials: "include",
     });
 
@@ -166,6 +206,151 @@ export async function deleteBlog(blogId, accessToken) {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.message || "Failed to delete blog");
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error(
+        "Unable to connect to the server. Please ensure the API server is running."
+      );
+    }
+    throw error;
+  }
+}
+
+/**
+ * Like a blog post
+ * @param {string} blogId - Blog ID
+ * @param {string} accessToken - Authentication token
+ * @returns {Promise<Object>} Updated blog
+ */
+export async function likeBlog(blogId, accessToken) {
+  try {
+    const response = await fetch(`${BASE_URL}/${blogId}/like`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Failed to like blog");
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error(
+        "Unable to connect to the server. Please ensure the API server is running."
+      );
+    }
+    throw error;
+  }
+}
+
+/**
+ * Dislike a blog post
+ * @param {string} blogId - Blog ID
+ * @param {string} accessToken - Authentication token
+ * @returns {Promise<Object>} Updated blog
+ */
+export async function dislikeBlog(blogId, accessToken) {
+  try {
+    const response = await fetch(`${BASE_URL}/${blogId}/dislike`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Failed to dislike blog");
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error(
+        "Unable to connect to the server. Please ensure the API server is running."
+      );
+    }
+    throw error;
+  }
+}
+
+/**
+ * Add a comment to a blog post
+ * @param {string} blogId - Blog ID
+ * @param {string} content - Comment content
+ * @param {string} accessToken - Authentication token
+ * @returns {Promise<Object>} Updated blog
+ */
+export async function addComment(blogId, content, accessToken) {
+  try {
+    const response = await fetch(`${BASE_URL}/${blogId}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+      body: JSON.stringify({ content }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      if (
+        error.details &&
+        Array.isArray(error.details) &&
+        error.details.length > 0
+      ) {
+        const firstError = error.details[0];
+        throw new Error(
+          firstError.msg || firstError.message || "Failed to add comment"
+        );
+      }
+      throw new Error(error.message || "Failed to add comment");
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error(
+        "Unable to connect to the server. Please ensure the API server is running."
+      );
+    }
+    throw error;
+  }
+}
+
+/**
+ * Get all blogs by the logged-in user
+ * @param {number} page - Page number (default: 1)
+ * @param {number} limit - Number of blogs per page (default: 10)
+ * @param {string} accessToken - Authentication token
+ * @returns {Promise<Object>} User's blogs data with pagination
+ */
+export async function getUserBlogs(page = 1, limit = 10, accessToken) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/user/my-blogs?page=${page}&limit=${limit}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Failed to fetch your blogs");
     }
 
     return response.json();
