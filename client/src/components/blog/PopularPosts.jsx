@@ -1,32 +1,108 @@
+import { useState, useEffect } from "react";
 import BlogCard from "../ui/BlogCard";
+import { getAllBlogs } from "../../services/blogService";
 
 export default function PopularPosts() {
+  const [trendingPosts, setTrendingPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTrendingPosts = async () => {
+      try {
+        // Fetch a larger number of blogs to ensure we have enough to sort by likes
+        const response = await getAllBlogs(1, 50, "createdAt");
+
+        // Sort by likes count (descending) and take top 3
+        const sortedByLikes = [...response.blogs].sort((a, b) => {
+          const likesA = Array.isArray(a.likes) ? a.likes.length : 0;
+          const likesB = Array.isArray(b.likes) ? b.likes.length : 0;
+          return likesB - likesA;
+        });
+
+        const top3 = sortedByLikes.slice(0, 3);
+        setTrendingPosts(top3);
+      } catch (error) {
+        console.error("Failed to fetch trending posts:", error);
+        setTrendingPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrendingPosts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-card rounded-xl overflow-hidden shadow-sm h-64 animate-pulse" />
+        <div className="flex flex-col gap-6">
+          <div className="bg-card rounded-xl overflow-hidden shadow-sm h-32 animate-pulse" />
+          <div className="bg-card rounded-xl overflow-hidden shadow-sm h-32 animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+
+  if (trendingPosts.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        No trending posts available
+      </div>
+    );
+  }
+
+  // Format date helper
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Top post (most liked) - large variant on left
+  const topPost = trendingPosts[0];
+  // 2nd and 3rd posts - horizontal variants on right
+  const secondPost = trendingPosts[1];
+  const thirdPost = trendingPosts[2];
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <BlogCard
-        variant="large"
-        img="https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        title="Sustainable Travel Tips: Reducing Your Carbon Footprint"
-        author="Clara Wilson"
-        date="Nov 28, 2024"
-      />
+      {topPost && (
+        <BlogCard
+          variant="large"
+          img={topPost.image || "https://via.placeholder.com/600x400"}
+          title={topPost.title}
+          author={topPost.author?.fullName || "Unknown Author"}
+          date={formatDate(topPost.createdAt)}
+          id={topPost._id}
+        />
+      )}
 
       <div className="flex flex-col gap-6">
-        <BlogCard
-          variant="horizontal"
-          img="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop"
-          title="Chasing Sunsets: The World's Most Scenic Destinations"
-          author="Amelia Scott"
-          date="Nov 29, 2026"
-        />
+        {secondPost && (
+          <BlogCard
+            variant="horizontal"
+            img={secondPost.image || "https://via.placeholder.com/400x300"}
+            title={secondPost.title}
+            author={secondPost.author?.fullName || "Unknown Author"}
+            date={formatDate(secondPost.createdAt)}
+            id={secondPost._id}
+          />
+        )}
 
-        <BlogCard
-          variant="horizontal"
-          img="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=1200&auto=format&fit=crop"
-          title="Hidden Gems: Europe's Best Kept Secret Destinations"
-          author="Oliver Grant"
-          date="Nov 29, 2026"
-        />
+        {thirdPost && (
+          <BlogCard
+            variant="horizontal"
+            img={thirdPost.image || "https://via.placeholder.com/400x300"}
+            title={thirdPost.title}
+            author={thirdPost.author?.fullName || "Unknown Author"}
+            date={formatDate(thirdPost.createdAt)}
+            id={thirdPost._id}
+          />
+        )}
       </div>
     </div>
   );
