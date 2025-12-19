@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import ListItem from "../ui/ListItem";
 import HamburgerLine from "../ui/HamburgerLine";
 import { useAuth } from "../../hooks/useAuth";
@@ -18,7 +17,6 @@ export default function Navigation() {
           <ul className="flex gap-7">
             <ListItem link={"/"} text={"Articles"} />
             <ListItem link={"/write"} text={"Write"} />
-            <ListItem link={"about"} text={"About"} />
             {!isAuthenticated && (
               <>
                 <ListItem link={"/auth/register"} text={"Register"} />

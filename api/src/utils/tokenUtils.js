@@ -67,6 +67,11 @@ export function verifyAccessToken(token) {
  * @throws {Error} Throws if the old token is invalid or expired.
  */
 export async function rotateRefreshToken(oldToken) {
+  // Validate token exists and has minimum length
+  if (!oldToken || typeof oldToken !== "string" || oldToken.length < 32) {
+    throw new UnauthorizedError("Invalid refresh token");
+  }
+
   // Extract tokenId (first 32 chars) for efficient indexed lookup
   const tokenId = oldToken.substring(0, 32);
 
@@ -129,5 +134,7 @@ export function attachTokensToResponse(res, accessToken, refreshToken) {
     sameSite: isProduction ? "None" : "Lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: "/",
+    // Don't set domain in development to allow cookie to work with proxy
+    ...(isProduction && { domain: process.env.COOKIE_DOMAIN }),
   });
 }

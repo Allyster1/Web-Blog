@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:5000/api/v1/auth";
+// Use relative path to go through Vite proxy in development
+// In production, this will be handled by your deployment setup
+const BASE_URL = "/api/v1/auth";
 
 export async function login({ email, password }, signal = undefined) {
   const response = await fetch(`${BASE_URL}/login`, {
@@ -87,6 +89,15 @@ export async function refreshAccessToken(signal = undefined) {
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      try {
+        document.cookie =
+          "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
     const error = await response.json().catch(() => ({}));
     const authError = new Error(error.message || "Failed to refresh token");
     authError.status = response.status;
