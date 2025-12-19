@@ -1,3 +1,5 @@
+import logger from "../utils/logger.js";
+
 export function errorMiddleware(err, req, res, next) {
   if (err.name === "MulterError") {
     if (err.code === "LIMIT_FILE_SIZE") {
@@ -30,13 +32,14 @@ export function errorMiddleware(err, req, res, next) {
     status === 401 && req.path.includes("/auth/refresh");
 
   if (!isExpectedAuthError) {
-    console.error("Error occurred:", {
+    logger.error("Error occurred", {
       message: err.message,
       stack: err.stack,
       status,
       path: req.originalUrl,
       method: req.method,
       body: req.body,
+      userId: req.user?.id,
     });
   }
 

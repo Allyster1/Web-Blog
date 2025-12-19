@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import logger from "../utils/logger.js";
 
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/myBlog_dev";
@@ -38,7 +39,7 @@ export default async function connectDB() {
       // Skip delay on first attempt
       if (attempt > 0) {
         const delay = INITIAL_DELAY * Math.pow(2, attempt - 1);
-        console.log(
+        logger.info(
           `Retrying connection (attempt ${
             attempt + 1
           }/${MAX_RETRIES}) in ${delay}ms...`
@@ -51,11 +52,12 @@ export default async function connectDB() {
         socketTimeoutMS: 45000,
       });
 
-      console.log("MongoDB connected successfully!");
+      logger.info("MongoDB connected successfully!");
 
       // Setup graceful shutdown
       process.on("SIGINT", async () => {
         await mongoose.connection.close();
+        logger.info("MongoDB connection closed gracefully");
         process.exit(0);
       });
 
@@ -69,19 +71,20 @@ export default async function connectDB() {
         error.name === "MongoParseError" ||
         error.name === "MongoAuthenticationError"
       ) {
-        console.error(`Fatal error: ${errorMsg}`);
+        logger.error(`Fatal error: ${errorMsg}`, { error: error.name });
         break;
       }
 
-      console.error(`Connection attempt ${attempt + 1} failed: ${errorMsg}`);
+      logger.warn(`Connection attempt ${attempt + 1} failed: ${errorMsg}`);
     }
   }
 
   // All retries failed
-  console.error(
+  logger.error(
     `Failed to connect after ${MAX_RETRIES} attempts: ${getErrorMessage(
       lastError
-    )}`
+    )}`,
+    { error: lastError }
   );
   process.exit(1);
 }

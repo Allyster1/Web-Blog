@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import logger from "../utils/logger.js";
 
 /**
  * Get database connection status
@@ -31,6 +32,7 @@ function getDatabaseStatus() {
  * @returns {Object} Health check data
  */
 export function getHealthStatus() {
+  // logger.debug("Health check requested");
   const dbStatus = getDatabaseStatus();
   const isHealthy = dbStatus.readyState === 1;
 
