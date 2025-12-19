@@ -11,11 +11,15 @@ export async function createBlog(blogData, accessToken) {
   formData.append("title", blogData.title);
   formData.append("content", blogData.content);
 
-  // If image is a file, append it. Otherwise, append as URL string
-  if (blogData.image instanceof File) {
-    formData.append("image", blogData.image);
-  } else if (blogData.image && typeof blogData.image === "string") {
-    formData.append("image", blogData.image);
+  if (blogData.image) {
+    if (blogData.image instanceof File) {
+      formData.append("image", blogData.image);
+    } else if (
+      typeof blogData.image === "string" &&
+      blogData.image.trim() !== ""
+    ) {
+      formData.append("image", blogData.image);
+    }
   }
 
   const response = await fetch(`${BASE_URL}`, {

@@ -43,8 +43,12 @@ export default function Write() {
       const blogData = {
         title: values.title,
         content: values.content,
-        image: values.imageFile || values.image || null,
       };
+      if (values.imageFile) {
+        blogData.image = values.imageFile;
+      } else if (values.image && values.image.trim() !== "") {
+        blogData.image = values.image;
+      }
 
       await createBlog(blogData, accessToken);
       navigate("/");

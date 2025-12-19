@@ -47,7 +47,6 @@ app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 
 app.use(cookieParser());
 
-// Request timeout protection (should be before routes)
 app.use(requestTimeout(30000)); // 30 seconds
 
 app.use(globalRateLimiter);
