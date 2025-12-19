@@ -1,4 +1,4 @@
-import Footer from "../components/Footer";
+import Footer from "../components/footer/Footer";
 import Header from "../components/Header";
 import Pagination from "../components/Pagination";
 import LatestPosts from "../components/blog/LatestPosts";
