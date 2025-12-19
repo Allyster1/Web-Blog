@@ -54,9 +54,14 @@ export async function getAllBlogs(page = 1, limit = 9, sortBy = "createdAt") {
   };
 }
 
-export async function getBlogById(blogId) {
-  // Only allow viewing approved blogs (or admins can view any)
-  const blog = await Blog.findOne({ _id: blogId, status: "approved" })
+export async function getBlogById(blogId, user = null) {
+  // Build query - admins can view any blog, others only approved
+  const query = { _id: blogId };
+  if (!user || user.role !== "admin") {
+    query.status = "approved";
+  }
+
+  const blog = await Blog.findOne(query)
     .populate("author", "fullName email")
     .populate("likes", "fullName email")
     .populate("dislikes", "fullName email")
@@ -90,14 +95,15 @@ export async function updateBlog(blogId, userId, updateData) {
     .populate("comments.user", "fullName email");
 }
 
-export async function deleteBlog(blogId, userId) {
+export async function deleteBlog(blogId, userId, isAdmin = false) {
   const blog = await Blog.findById(blogId);
 
   if (!blog) {
     throw new BadRequestError("Blog not found");
   }
 
-  if (blog.author.toString() !== userId.toString()) {
+  // Admins can delete any blog, regular users can only delete their own
+  if (!isAdmin && blog.author.toString() !== userId.toString()) {
     throw new ForbiddenError("You can only delete your own blogs");
   }
 
@@ -245,6 +251,34 @@ export async function getPendingBlogs(page = 1, limit = 9) {
     .limit(limit);
 
   const total = await Blog.countDocuments({ status: "pending" });
+
+  return {
+    blogs,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  };
+}
+
+/**
+ * Get all rejected blogs (admin only)
+ * @param {number} page - Page number
+ * @param {number} limit - Items per page
+ * @returns {Promise<Object>} Rejected blogs with pagination
+ */
+export async function getRejectedBlogs(page = 1, limit = 9) {
+  const skip = (page - 1) * limit;
+
+  const blogs = await Blog.find({ status: "rejected" })
+    .populate("author", "fullName email")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Blog.countDocuments({ status: "rejected" });
 
   return {
     blogs,
