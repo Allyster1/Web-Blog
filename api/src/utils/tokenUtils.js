@@ -125,16 +125,32 @@ export async function rotateRefreshToken(oldToken) {
 
 const isProduction = process.env.NODE_ENV === "production";
 
-export function attachTokensToResponse(res, accessToken, refreshToken) {
-  res.setHeader("x-access-token", accessToken);
-
-  res.cookie("refreshToken", refreshToken, {
+/**
+ * Get cookie options for refresh token (used for both setting and clearing)
+ * @returns {Object} Cookie options object
+ */
+export function getRefreshTokenCookieOptions() {
+  const options = {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction ? "None" : "Lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: "/",
-    // Don't set domain in development to allow cookie to work with proxy
-    ...(isProduction && { domain: process.env.COOKIE_DOMAIN }),
-  });
+  };
+
+  if (isProduction && process.env.COOKIE_DOMAIN) {
+    options.domain = process.env.COOKIE_DOMAIN;
+  }
+
+  return options;
+}
+
+export function attachTokensToResponse(res, accessToken, refreshToken) {
+  res.setHeader("x-access-token", accessToken);
+
+  const cookieOptions = {
+    ...getRefreshTokenCookieOptions(),
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  };
+
+  res.cookie("refreshToken", refreshToken, cookieOptions);
 }
