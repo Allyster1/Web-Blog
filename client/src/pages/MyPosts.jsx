@@ -117,7 +117,7 @@ export default function MyPosts() {
                 Start writing your first blog post{" "}
                 <button
                   onClick={() => navigate("/blog/write")}
-                  className="underline hover:text-blue-800"
+                  className="underline hover:text-blue-800 cursor-pointer"
                 >
                   here
                 </button>
