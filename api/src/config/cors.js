@@ -3,7 +3,7 @@ import cors from "cors";
 const whitelist =
   process.env.NODE_ENV === "production"
     ? [process.env.FRONTEND_URL] // e.g. https://myfrontend.com
-    : ["http://localhost:5173"]; // dev environment
+    : ["http://localhost:5173", "http://localhost:4173"]; // dev environment (Vite dev server and preview)
 
 const corsMiddleware = cors({
   origin: function (origin, callback) {
