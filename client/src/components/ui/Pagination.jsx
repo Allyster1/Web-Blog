@@ -11,27 +11,31 @@ export default function Pagination({
   onPageChange,
   className = "",
 }) {
-  if (!pagination || pagination.pages <= 1) {
+  if (!pagination || !pagination.pages || pagination.pages <= 1) {
     return null;
   }
 
-  const { page, pages, total, limit } = pagination;
-  const startItem = (page - 1) * limit + 1;
+  const { page = 1, pages, total = 0, limit = 9 } = pagination;
+
+  // Calculate start and end items
+  const startItem = total === 0 ? 0 : (page - 1) * limit + 1;
   const endItem = Math.min(page * limit, total);
 
   return (
     <div className={`flex flex-col items-center gap-4 mt-8 ${className}`}>
-      <div className="text-sm text-gray-600">
-        Showing {startItem} to {endItem} of {total} result
-        {total !== 1 ? "s" : ""}
-      </div>
+      {total > 0 && (
+        <div className="text-sm text-gray-600">
+          Showing {startItem} to {endItem} of {total} result
+          {total !== 1 ? "s" : ""}
+        </div>
+      )}
 
       <div className="flex items-center justify-center gap-2">
         <Button
           type="button"
           variant="secondary"
-          onClick={() => onPageChange(page - 1)}
-          disabled={page === 1}
+          onClick={() => onPageChange(Math.max(1, page - 1))}
+          disabled={page <= 1}
         >
           Previous
         </Button>
@@ -43,7 +47,7 @@ export default function Pagination({
         <Button
           type="button"
           variant="secondary"
-          onClick={() => onPageChange(page + 1)}
+          onClick={() => onPageChange(Math.min(pages, page + 1))}
           disabled={page >= pages}
         >
           Next

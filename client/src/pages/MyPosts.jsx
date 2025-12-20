@@ -19,7 +19,7 @@ export default function MyPosts() {
   const [deletingBlogId, setDeletingBlogId] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 10,
+    limit: 9,
     total: 0,
     pages: 0,
   });
@@ -30,10 +30,10 @@ export default function MyPosts() {
       try {
         setIsLoading(true);
         setError("");
-        const result = await getUserBlogs(page, 10, accessToken);
+        const result = await getUserBlogs(page, 9, accessToken);
         setBlogs(result.blogs || []);
         setPagination(
-          result.pagination || { page: 1, limit: 10, total: 0, pages: 0 }
+          result.pagination || { page: 1, limit: 9, total: 0, pages: 0 }
         );
       } catch (err) {
         setError(err.message || "Failed to load your blogs");

@@ -299,11 +299,11 @@ export async function addComment(blogId, content, accessToken) {
 /**
  * Get all blogs by the logged-in user
  * @param {number} page - Page number (default: 1)
- * @param {number} limit - Number of blogs per page (default: 10)
+ * @param {number} limit - Number of blogs per page (default: 9)
  * @param {string} accessToken - Authentication token
  * @returns {Promise<Object>} User's blogs data with pagination
  */
-export async function getUserBlogs(page = 1, limit = 10, accessToken) {
+export async function getUserBlogs(page = 1, limit = 9, accessToken) {
   try {
     const response = await fetch(
       `${BASE_URL}/user/my-blogs?page=${page}&limit=${limit}`,

@@ -18,7 +18,7 @@ export default function AdminDashboard() {
   const [updatingBlogId, setUpdatingBlogId] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 10,
+    limit: 9,
     total: 0,
     pages: 0,
   });
@@ -29,10 +29,10 @@ export default function AdminDashboard() {
       try {
         setIsLoading(true);
         setError("");
-        const result = await getPendingBlogs(page, 10, accessToken);
+        const result = await getPendingBlogs(page, 9, accessToken);
         setPendingBlogs(result.blogs || []);
         setPagination(
-          result.pagination || { page: 1, limit: 10, total: 0, pages: 0 }
+          result.pagination || { page: 1, limit: 9, total: 0, pages: 0 }
         );
       } catch (err) {
         setError(err.message || "Failed to load pending blogs");
