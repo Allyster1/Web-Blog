@@ -92,27 +92,22 @@ export default function Login() {
         onChange={changeHandler}
       />
 
-      <div className="flex justify-between">
-        <div className="flex gap-2">
-          <input
-            type="checkbox"
-            name="remember"
-            id="remember"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-            disabled={isLoading}
-            className="cursor-pointer"
-          />
-          <label
-            htmlFor="remember"
-            className="text-[#718096] font-medium text-sm ml-0.5 cursor-pointer"
-          >
-            Remember Me
-          </label>
-        </div>
-        <a href="#" className="text-[#1C4532] underline text-sm">
-          Forgot Password?
-        </a>
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          name="remember"
+          id="remember"
+          checked={rememberMe}
+          onChange={(e) => setRememberMe(e.target.checked)}
+          disabled={isLoading}
+          className="cursor-pointer"
+        />
+        <label
+          htmlFor="remember"
+          className="text-[#718096] font-medium text-sm ml-0.5 cursor-pointer"
+        >
+          Remember Me
+        </label>
       </div>
       <button
         type="submit"
