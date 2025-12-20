@@ -6,8 +6,42 @@ import { getPendingBlogs, updateBlogStatus } from "../services/blogService.js";
 const adminController = Router();
 
 /**
- * GET /api/v1/admin/pending-blogs
- * Get all pending blogs that need approval
+ * @swagger
+ * /api/v1/admin/pending-blogs:
+ *   get:
+ *     summary: Get all pending blogs (admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 9
+ *         description: Items per page
+ *     responses:
+ *       200:
+ *         description: List of pending blogs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 blogs:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Blog'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *       403:
+ *         description: Admin access required
  */
 adminController.get(
   "/pending-blogs",
@@ -26,9 +60,49 @@ adminController.get(
 );
 
 /**
- * PATCH /api/v1/admin/blogs/:id/status
- * Approve or reject a blog
- * Body: { status: "approved" | "rejected" }
+ * @swagger
+ * /api/v1/admin/blogs/{id}/status:
+ *   patch:
+ *     summary: Approve or reject a blog post (admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [approved, rejected]
+ *                 example: approved
+ *     responses:
+ *       200:
+ *         description: Blog status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 blog:
+ *                   $ref: '#/components/schemas/Blog'
+ *       403:
+ *         description: Admin access required
+ *       404:
+ *         description: Blog not found
  */
 adminController.patch(
   "/blogs/:id/status",

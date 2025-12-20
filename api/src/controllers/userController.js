@@ -20,6 +20,56 @@ import {
 
 const userController = Router();
 
+/**
+ * @swagger
+ * /api/v1/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - fullName
+ *               - email
+ *               - password
+ *               - rePass
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: password123
+ *               rePass:
+ *                 type: string
+ *                 format: password
+ *                 example: password123
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 userController.post(
   "/register",
   authRateLimiter,
@@ -53,6 +103,46 @@ userController.post(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: password123
+ *               rememberMe:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials
+ */
 userController.post(
   "/login",
   authRateLimiter,
@@ -85,6 +175,26 @@ userController.post(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Logout successful
+ */
 userController.post("/logout", authMiddleware, async (req, res, next) => {
   try {
     await logout(req.user.id);
@@ -97,6 +207,37 @@ userController.post("/logout", authMiddleware, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v1/auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Authentication]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 description: Refresh token (if not in cookie)
+ *     responses:
+ *       200:
+ *         description: Token refreshed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *       401:
+ *         description: Invalid or expired refresh token
+ */
 userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
   const cookieOptions = getRefreshTokenCookieOptions(req);
 

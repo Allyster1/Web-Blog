@@ -16,6 +16,8 @@ import {
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import logger from "./utils/logger.js";
 import { setupProcessHandlers, setServer } from "./utils/gracefulShutdown.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
 
 setupProcessHandlers();
 
@@ -48,6 +50,9 @@ app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 app.use(cookieParser());
 
 app.use(requestTimeout(30000)); // 30 seconds
+
+// Swagger API Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(globalRateLimiter);
 app.use(router);
