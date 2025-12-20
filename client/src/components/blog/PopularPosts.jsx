@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import BlogCard from "../ui/BlogCard";
 import { getAllBlogs } from "../../services/blogService";
+import { formatBlogDate } from "../../utils/dateUtils";
 
 export default function PopularPosts() {
   const [trendingPosts, setTrendingPosts] = useState([]);
@@ -22,7 +23,6 @@ export default function PopularPosts() {
         const top3 = sortedByLikes.slice(0, 3);
         setTrendingPosts(top3);
       } catch (error) {
-        console.error("Failed to fetch trending posts:", error);
         setTrendingPosts([]);
       } finally {
         setLoading(false);
@@ -52,16 +52,6 @@ export default function PopularPosts() {
     );
   }
 
-  // Format date helper
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
   // Top post (most liked) - large variant on left
   const topPost = trendingPosts[0];
   // 2nd and 3rd posts - horizontal variants on right
@@ -76,7 +66,7 @@ export default function PopularPosts() {
           img={topPost.image || "https://via.placeholder.com/600x400"}
           title={topPost.title}
           author={topPost.author?.fullName || "Unknown Author"}
-          date={formatDate(topPost.createdAt)}
+          date={formatBlogDate(topPost.createdAt)}
           id={topPost._id}
         />
       )}
@@ -88,7 +78,7 @@ export default function PopularPosts() {
             img={secondPost.image || "https://via.placeholder.com/400x300"}
             title={secondPost.title}
             author={secondPost.author?.fullName || "Unknown Author"}
-            date={formatDate(secondPost.createdAt)}
+            date={formatBlogDate(secondPost.createdAt)}
             id={secondPost._id}
           />
         )}
@@ -99,7 +89,7 @@ export default function PopularPosts() {
             img={thirdPost.image || "https://via.placeholder.com/400x300"}
             title={thirdPost.title}
             author={thirdPost.author?.fullName || "Unknown Author"}
-            date={formatDate(thirdPost.createdAt)}
+            date={formatBlogDate(thirdPost.createdAt)}
             id={thirdPost._id}
           />
         )}

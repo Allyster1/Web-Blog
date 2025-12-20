@@ -17,8 +17,3 @@ const getApiBaseUrl = () => {
 };
 
 export const API_BASE_URL = getApiBaseUrl();
-
-// Debug: Log the API URL being used (remove in production)
-if (import.meta.env.DEV) {
-  console.log("API Base URL:", API_BASE_URL || "(empty - using relative URLs)");
-}

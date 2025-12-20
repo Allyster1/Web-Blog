@@ -23,7 +23,6 @@ export default function Logout() {
         await logout(accessToken, signal);
       } catch (error) {
         if (error.name !== "AbortError") {
-          console.error("Logout error:", error);
         }
       } finally {
         if (!signal.aborted) {

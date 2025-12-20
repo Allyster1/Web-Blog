@@ -5,7 +5,9 @@ import { getPendingBlogs, updateBlogStatus } from "../services/adminService";
 import { useAuth } from "../hooks/useAuth";
 import LoadingScreen from "../components/ui/LoadingScreen";
 import Button from "../components/ui/Button";
+import Pagination from "../components/ui/Pagination";
 import Header from "../components/Header";
+import { formatDateTime } from "../utils/dateUtils";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -64,19 +66,6 @@ export default function AdminDashboard() {
 
   const handlePageChange = (newPage) => {
     fetchPendingBlogs(newPage);
-    setPagination((prev) => ({ ...prev, page: newPage }));
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   };
 
   if (isLoading && pendingBlogs.length === 0) {
@@ -110,11 +99,6 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <>
-              <div className="mb-4 text-sm text-gray-600">
-                Showing {pendingBlogs.length} of {pagination.total} pending blog
-                {pagination.total !== 1 ? "s" : ""}
-              </div>
-
               <div className="space-y-4">
                 {pendingBlogs.map((blog) => (
                   <div
@@ -152,7 +136,7 @@ export default function AdminDashboard() {
                             </span>
                             <span>
                               <strong>Submitted:</strong>{" "}
-                              {formatDate(blog.createdAt)}
+                              {formatDateTime(blog.createdAt)}
                             </span>
                           </div>
                         </div>
@@ -199,30 +183,10 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Pagination */}
-              {pagination.pages > 1 && (
-                <div className="mt-8 flex justify-center gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                  >
-                    Previous
-                  </Button>
-                  <span className="flex items-center px-4 text-sm text-gray-600">
-                    Page {pagination.page} of {pagination.pages}
-                  </span>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page >= pagination.pages}
-                  >
-                    Next
-                  </Button>
-                </div>
-              )}
+              <Pagination
+                pagination={pagination}
+                onPageChange={handlePageChange}
+              />
             </>
           )}
         </div>

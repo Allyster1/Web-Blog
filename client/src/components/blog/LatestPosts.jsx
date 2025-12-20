@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ArticleGrid from "../ui/ArticleGrid";
 import { getAllBlogs } from "../../services/blogService";
+import { formatBlogDate } from "../../utils/dateUtils";
 
 export default function LatestPosts() {
   const [latestPosts, setLatestPosts] = useState([]);
@@ -15,12 +16,11 @@ export default function LatestPosts() {
         // Format dates for the posts
         const formattedPosts = (response.blogs || []).map((post) => ({
           ...post,
-          formattedDate: formatDate(post.createdAt),
+          formattedDate: formatBlogDate(post.createdAt),
         }));
 
         setLatestPosts(formattedPosts);
       } catch (error) {
-        console.error("Failed to fetch latest posts:", error);
         setLatestPosts([]);
       } finally {
         setLoading(false);
@@ -29,16 +29,6 @@ export default function LatestPosts() {
 
     fetchLatestPosts();
   }, []);
-
-  // Format date helper
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
 
   if (loading) {
     return (

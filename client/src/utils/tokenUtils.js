@@ -21,7 +21,6 @@ export function decodeToken(token) {
 
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error("Error decoding token:", error);
     return null;
   }
 }

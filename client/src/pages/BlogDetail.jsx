@@ -14,6 +14,7 @@ import { getUserIdFromToken } from "../utils/tokenUtils";
 import LoadingScreen from "../components/ui/LoadingScreen";
 import Button from "../components/ui/Button";
 import TextareaField from "../components/ui/TextareaField";
+import { formatBlogDate } from "../utils/dateUtils";
 import { FaThumbsUp } from "react-icons/fa";
 
 export default function BlogDetail() {
@@ -151,16 +152,6 @@ export default function BlogDetail() {
     );
   }
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   return (
     <>
       <Header />
@@ -270,7 +261,7 @@ export default function BlogDetail() {
             {/* Date at bottom */}
             <div className="mt-8 pt-6 border-t border-gray-200">
               <p className="text-sm text-gray-600">
-                Published on {formatDate(blog.createdAt)}
+                Published on {formatBlogDate(blog.createdAt)}
               </p>
             </div>
 
@@ -350,7 +341,7 @@ export default function BlogDetail() {
                                 {comment.user?.fullName || "Anonymous"}
                               </strong>
                               <span className="text-sm text-gray-500">
-                                {formatDate(comment.createdAt)}
+                                {formatBlogDate(comment.createdAt)}
                               </span>
                             </div>
                             <p className="text-gray-700 whitespace-pre-wrap">

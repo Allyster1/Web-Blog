@@ -24,6 +24,8 @@ export default defineConfig([
     },
     rules: {
       "no-unused-vars": "off",
+      "react/prop-types": "off",
+      "no-empty": "off",
     },
   },
 ]);

@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config/apiConfig.js";
+import { handleNetworkError } from "../utils/errorUtils.js";
 
 const BASE_URL = `${API_BASE_URL}/api/v1/blogs`;
 
@@ -26,12 +27,7 @@ export async function getAllBlogs(page = 1, limit = 9, sortBy = "createdAt") {
 
     return response.json();
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(
-        "Unable to connect to the server. Please ensure the API server is running."
-      );
-    }
-    throw error;
+    throw handleNetworkError(error, "Failed to fetch blogs");
   }
 }
 
@@ -121,12 +117,7 @@ export async function getBlogById(blogId, accessToken = null) {
 
     return response.json();
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(
-        "Unable to connect to the server. Please ensure the API server is running."
-      );
-    }
-    throw error;
+    throw handleNetworkError(error, "Failed to fetch blogs");
   }
 }
 
@@ -180,12 +171,7 @@ export async function updateBlog(blogId, blogData, accessToken) {
 
     return response.json();
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(
-        "Unable to connect to the server. Please ensure the API server is running."
-      );
-    }
-    throw error;
+    throw handleNetworkError(error, "Failed to fetch blogs");
   }
 }
 
@@ -212,12 +198,7 @@ export async function deleteBlog(blogId, accessToken) {
 
     return response.json();
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(
-        "Unable to connect to the server. Please ensure the API server is running."
-      );
-    }
-    throw error;
+    throw handleNetworkError(error, "Failed to fetch blogs");
   }
 }
 
@@ -244,12 +225,7 @@ export async function likeBlog(blogId, accessToken) {
 
     return response.json();
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(
-        "Unable to connect to the server. Please ensure the API server is running."
-      );
-    }
-    throw error;
+    throw handleNetworkError(error, "Failed to fetch blogs");
   }
 }
 
@@ -276,12 +252,7 @@ export async function dislikeBlog(blogId, accessToken) {
 
     return response.json();
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(
-        "Unable to connect to the server. Please ensure the API server is running."
-      );
-    }
-    throw error;
+    throw handleNetworkError(error, "Failed to fetch blogs");
   }
 }
 
@@ -321,12 +292,7 @@ export async function addComment(blogId, content, accessToken) {
 
     return response.json();
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(
-        "Unable to connect to the server. Please ensure the API server is running."
-      );
-    }
-    throw error;
+    throw handleNetworkError(error, "Failed to fetch blogs");
   }
 }
 
@@ -357,11 +323,6 @@ export async function getUserBlogs(page = 1, limit = 10, accessToken) {
 
     return response.json();
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new Error(
-        "Unable to connect to the server. Please ensure the API server is running."
-      );
-    }
-    throw error;
+    throw handleNetworkError(error, "Failed to fetch blogs");
   }
 }

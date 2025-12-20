@@ -1,9 +1,7 @@
 import Footer from "../components/footer/Footer";
 import Header from "../components/Header";
-import Pagination from "../components/Pagination";
 import LatestPosts from "../components/blog/LatestPosts";
 import PopularPosts from "../components/blog/PopularPosts";
-
 import PostHeader from "../components/blog/PostHeader";
 import BannerCard from "../components/blog/BannerCard";
 import ContainerLayout from "./ContainerLayout";
@@ -24,7 +22,6 @@ export default function BlogLayout() {
           text="Discover how innovation and creativity drive meaningful change"
         />
         <LatestPosts />
-        <Pagination />
       </ContainerLayout>
       <Footer />
     </>

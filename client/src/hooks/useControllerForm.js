@@ -3,7 +3,6 @@ import { useState } from "react";
 export default function useControlledFormHook(initialValues, onSubmit) {
   const [values, setValues] = useState(initialValues);
 
-  //  TODO: Handler checkbox change
   const changeHandler = (e) => {
     setValues((state) => ({
       ...state,
@@ -16,10 +15,9 @@ export default function useControlledFormHook(initialValues, onSubmit) {
 
     try {
       await onSubmit(values);
-
       setValues(initialValues);
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   };
 

@@ -5,8 +5,10 @@ import { getUserBlogs, deleteBlog } from "../services/blogService";
 import { useAuth } from "../hooks/useAuth";
 import LoadingScreen from "../components/ui/LoadingScreen";
 import Button from "../components/ui/Button";
+import Pagination from "../components/ui/Pagination";
 import Header from "../components/Header";
 import Footer from "../components/footer/Footer";
+import { formatBlogDate, formatDateTime } from "../utils/dateUtils";
 
 export default function MyPosts() {
   const navigate = useNavigate();
@@ -68,7 +70,6 @@ export default function MyPosts() {
 
   const handlePageChange = (newPage) => {
     fetchUserBlogs(newPage);
-    setPagination((prev) => ({ ...prev, page: newPage }));
   };
 
   const getStatusBadge = (status) => {
@@ -125,11 +126,6 @@ export default function MyPosts() {
             </div>
           ) : (
             <>
-              <div className="mb-4 text-sm text-gray-600">
-                Showing {blogs.length} of {pagination.total} post
-                {pagination.total !== 1 ? "s" : ""}
-              </div>
-
               <div className="space-y-4">
                 {blogs.map((blog) => (
                   <div
@@ -162,26 +158,12 @@ export default function MyPosts() {
                           <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
                             <span>
                               <strong>Created:</strong>{" "}
-                              {new Date(blog.createdAt).toLocaleDateString(
-                                "en-US",
-                                {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                }
-                              )}
+                              {formatBlogDate(blog.createdAt)}
                             </span>
                             {blog.updatedAt && (
                               <span>
                                 <strong>Updated:</strong>{" "}
-                                {new Date(blog.updatedAt).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                  }
-                                )}
+                                {formatBlogDate(blog.updatedAt)}
                               </span>
                             )}
                             <span>
@@ -229,28 +211,10 @@ export default function MyPosts() {
                 ))}
               </div>
 
-              {/* Pagination */}
-              {pagination.pages > 1 && (
-                <div className="mt-8 flex justify-center gap-2">
-                  <Button
-                    variant="secondary"
-                    onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                  >
-                    Previous
-                  </Button>
-                  <span className="flex items-center px-4 text-sm text-gray-600">
-                    Page {pagination.page} of {pagination.pages}
-                  </span>
-                  <Button
-                    variant="secondary"
-                    onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page >= pagination.pages}
-                  >
-                    Next
-                  </Button>
-                </div>
-              )}
+              <Pagination
+                pagination={pagination}
+                onPageChange={handlePageChange}
+              />
             </>
           )}
         </div>
