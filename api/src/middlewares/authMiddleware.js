@@ -27,7 +27,7 @@ export async function authMiddleware(req, res, next) {
           refreshToken: newRefreshToken,
         } = await rotateRefreshToken(refreshToken);
 
-        attachTokensToResponse(res, accessToken, newRefreshToken);
+        attachTokensToResponse(res, accessToken, newRefreshToken, req);
 
         req.user = {
           id: user._id,

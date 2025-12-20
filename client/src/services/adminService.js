@@ -1,4 +1,6 @@
-const BASE_URL = "/api/v1/admin";
+import { API_BASE_URL } from "../config/apiConfig.js";
+
+const BASE_URL = `${API_BASE_URL}/api/v1/admin`;
 
 /**
  * Get all pending blogs (admin only)

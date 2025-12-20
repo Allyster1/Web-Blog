@@ -29,10 +29,10 @@ export function AuthProvider({ children }) {
         if (error.name === "AbortError") {
           return;
         }
-        if (error.status !== 401 || error.message !== "Refresh token missing") {
-          console.error("Auth initialization error:", error);
-        }
-        if (!abortController.signal.aborted) {
+        if (error.status === 401) {
+          setAccessToken(null);
+          setIsAuthenticated(false);
+        } else {
           setAccessToken(null);
           setIsAuthenticated(false);
         }

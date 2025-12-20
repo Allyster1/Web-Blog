@@ -127,28 +127,42 @@ const isProduction = process.env.NODE_ENV === "production";
 
 /**
  * Get cookie options for refresh token (used for both setting and clearing)
+ * @param {import('express').Request} [req] - Optional request object to detect origin
  * @returns {Object} Cookie options object
  */
-export function getRefreshTokenCookieOptions() {
+export function getRefreshTokenCookieOptions(req = null) {
+  // Check if request is from localhost (development frontend)
+  const isLocalhostOrigin =
+    req?.headers?.origin &&
+    (req.headers.origin.includes("localhost") ||
+      req.headers.origin.includes("127.0.0.1"));
+
+  // For localhost origins, use Lax and non-secure (works with HTTP)
+  // For production origins, use None and secure (requires HTTPS)
   const options = {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
+    secure: isProduction && !isLocalhostOrigin, // Secure only in production with non-localhost
+    sameSite: isLocalhostOrigin ? "Lax" : isProduction ? "None" : "Lax",
     path: "/",
   };
 
-  if (isProduction && process.env.COOKIE_DOMAIN) {
+  if (isProduction && process.env.COOKIE_DOMAIN && !isLocalhostOrigin) {
     options.domain = process.env.COOKIE_DOMAIN;
   }
 
   return options;
 }
 
-export function attachTokensToResponse(res, accessToken, refreshToken) {
+export function attachTokensToResponse(
+  res,
+  accessToken,
+  refreshToken,
+  req = null
+) {
   res.setHeader("x-access-token", accessToken);
 
   const cookieOptions = {
-    ...getRefreshTokenCookieOptions(),
+    ...getRefreshTokenCookieOptions(req),
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   };
 

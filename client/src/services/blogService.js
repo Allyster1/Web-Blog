@@ -1,4 +1,6 @@
-const BASE_URL = "/api/v1/blogs";
+import { API_BASE_URL } from "../config/apiConfig.js";
+
+const BASE_URL = `${API_BASE_URL}/api/v1/blogs`;
 
 /**
  * Get all blogs with optional sorting and pagination

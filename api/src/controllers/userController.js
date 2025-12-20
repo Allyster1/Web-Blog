@@ -36,7 +36,7 @@ userController.post(
         rePass
       );
 
-      attachTokensToResponse(res, accessToken, refreshToken);
+      attachTokensToResponse(res, accessToken, refreshToken, req);
 
       res.status(201).json({ accessToken });
     } catch (error) {
@@ -55,7 +55,7 @@ userController.post(
       const { email, password } = req.body;
       const { accessToken, refreshToken } = await login(email, password);
 
-      attachTokensToResponse(res, accessToken, refreshToken);
+      attachTokensToResponse(res, accessToken, refreshToken, req);
 
       res.status(200).json({ accessToken });
     } catch (error) {
@@ -68,7 +68,7 @@ userController.post("/logout", authMiddleware, async (req, res, next) => {
   try {
     await logout(req.user.id);
 
-    res.clearCookie("refreshToken", getRefreshTokenCookieOptions());
+    res.clearCookie("refreshToken", getRefreshTokenCookieOptions(req));
 
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
@@ -77,7 +77,7 @@ userController.post("/logout", authMiddleware, async (req, res, next) => {
 });
 
 userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
-  const cookieOptions = getRefreshTokenCookieOptions();
+  const cookieOptions = getRefreshTokenCookieOptions(req);
 
   try {
     if (process.env.NODE_ENV !== "production") {
@@ -86,6 +86,7 @@ userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
         cookieKeys: req.cookies ? Object.keys(req.cookies) : [],
         hasRefreshToken: !!req.cookies?.refreshToken,
         refreshTokenLength: req.cookies?.refreshToken?.length || 0,
+        origin: req.headers.origin,
       });
     }
 
@@ -97,7 +98,7 @@ userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
 
     const tokens = await refreshUserToken(refreshToken);
 
-    attachTokensToResponse(res, tokens.accessToken, tokens.refreshToken);
+    attachTokensToResponse(res, tokens.accessToken, tokens.refreshToken, req);
 
     res.status(200).json({ accessToken: tokens.accessToken });
   } catch (error) {
