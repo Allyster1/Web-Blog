@@ -44,3 +44,13 @@ export function getUserRoleFromToken(token) {
   const decoded = decodeToken(token);
   return decoded?.role || null;
 }
+
+/**
+ * Get user email from JWT token
+ * @param {string} token - JWT access token
+ * @returns {string|null} User email or null if not found
+ */
+export function getUserEmailFromToken(token) {
+  const decoded = decodeToken(token);
+  return decoded?.email || null;
+}
