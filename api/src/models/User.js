@@ -49,7 +49,7 @@ const userSchema = new Schema(
     },
     refreshToken: {
       token: { type: String, select: false },
-      tokenId: { type: String, select: false, index: true },
+      tokenId: { type: String, select: true, index: true }, // tokenId needs to be selectable for queries
       expiresAt: { type: Date, select: false },
     },
     role: {

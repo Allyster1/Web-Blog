@@ -76,25 +76,33 @@ export async function rotateRefreshToken(oldToken) {
   const tokenId = oldToken.substring(0, 32);
 
   // Query user by indexed tokenId instead of scanning all users
-  const userFound = await User.findOne({
+  // Use lean() with explicit select to include nested fields with select: false
+  const userLean = await User.findOne({
     "refreshToken.tokenId": tokenId,
-  }).select("+refreshToken");
+  })
+    .select("+refreshToken.token +refreshToken.expiresAt")
+    .lean();
 
-  if (!userFound || !userFound.refreshToken || !userFound.refreshToken.token) {
+  // Convert back to Mongoose document for saving
+  const userFound = userLean ? await User.findById(userLean._id) : null;
+
+  // Get the token from the lean result (has all fields)
+  const storedToken = userLean?.refreshToken?.token;
+  const storedExpiresAt = userLean?.refreshToken?.expiresAt;
+
+  if (!userFound || !userLean?.refreshToken || !storedToken) {
     throw new UnauthorizedError("Invalid refresh token");
   }
 
   // Verify the token hash matches
-  const isValidToken = await verifyToken(
-    oldToken,
-    userFound.refreshToken.token
-  );
+  const isValidToken = await verifyToken(oldToken, storedToken);
+
   if (!isValidToken) {
     throw new UnauthorizedError("Invalid refresh token");
   }
 
   // Check expiration
-  if (new Date() > userFound.refreshToken.expiresAt) {
+  if (new Date() > storedExpiresAt) {
     userFound.refreshToken = null;
     await userFound.save();
     throw new UnauthorizedError("Invalid refresh token");

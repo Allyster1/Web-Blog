@@ -17,7 +17,6 @@ import {
   attachTokensToResponse,
   getRefreshTokenCookieOptions,
 } from "../utils/tokenUtils.js";
-import logger from "../utils/logger.js";
 
 const userController = Router();
 
@@ -98,16 +97,6 @@ userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
   const cookieOptions = getRefreshTokenCookieOptions(req);
 
   try {
-    if (process.env.NODE_ENV !== "production") {
-      logger.debug("Refresh endpoint - Cookies received", {
-        hasCookies: !!req.cookies,
-        cookieKeys: req.cookies ? Object.keys(req.cookies) : [],
-        hasRefreshToken: !!req.cookies?.refreshToken,
-        refreshTokenLength: req.cookies?.refreshToken?.length || 0,
-        origin: req.headers.origin,
-      });
-    }
-
     const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
     if (!refreshToken) {

@@ -36,6 +36,13 @@ export async function login({ email, password }, signal = undefined) {
     data.refreshToken || response.headers.get("x-refresh-token");
   if (refreshToken) {
     localStorage.setItem("refreshToken", refreshToken);
+    console.log("✅ Login: Refresh token stored in localStorage");
+  } else {
+    console.warn("⚠️ Login: No refresh token received", {
+      hasBodyToken: !!data.refreshToken,
+      hasHeaderToken: !!response.headers.get("x-refresh-token"),
+      responseData: data,
+    });
   }
 
   return data;
@@ -78,6 +85,9 @@ export async function register(
     data.refreshToken || response.headers.get("x-refresh-token");
   if (refreshToken) {
     localStorage.setItem("refreshToken", refreshToken);
+    console.log("✅ Register: Refresh token stored in localStorage");
+  } else {
+    console.warn("⚠️ Register: No refresh token received");
   }
 
   return data;
@@ -107,28 +117,48 @@ export async function refreshAccessToken(signal = undefined) {
   // Get refresh token from localStorage (for localhost cross-origin fallback)
   const refreshTokenFromStorage = localStorage.getItem("refreshToken");
 
-  const response = await fetch(`${BASE_URL}/refresh`, {
+  // Build request options
+  const requestOptions = {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     credentials: "include",
     signal,
-    // Send refresh token in body if available (fallback when cookies don't work cross-origin)
-    body: refreshTokenFromStorage
-      ? JSON.stringify({ refreshToken: refreshTokenFromStorage })
-      : undefined,
-  });
+  };
+
+  // Only include body and Content-Type if we have a refreshToken in localStorage
+  // Otherwise, rely on cookies (for production)
+  if (refreshTokenFromStorage) {
+    requestOptions.headers = {
+      "Content-Type": "application/json",
+    };
+    requestOptions.body = JSON.stringify({
+      refreshToken: refreshTokenFromStorage,
+    });
+    console.log("🔄 Refresh: Using refresh token from localStorage");
+  } else {
+    console.log(
+      "🍪 Refresh: No token in localStorage, attempting to use cookie"
+    );
+  }
+
+  const response = await fetch(`${BASE_URL}/refresh`, requestOptions);
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
 
+    console.error("❌ Refresh failed:", {
+      status: response.status,
+      errorMessage: error.message,
+      hasTokenInStorage: !!refreshTokenFromStorage,
+      tokenLength: refreshTokenFromStorage?.length,
+    });
+
     if (response.status === 401 && error.message === "Refresh token missing") {
+      console.warn("⚠️ Refresh token missing - clearing storage");
       // Clear both cookie and localStorage
       try {
         document.cookie =
           "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      } catch (e) {
+      } catch (_) {
         // Ignore cookie clearing errors
       }
       localStorage.removeItem("refreshToken");
@@ -136,6 +166,11 @@ export async function refreshAccessToken(signal = undefined) {
     }
 
     if (response.status === 401) {
+      console.warn("⚠️ Invalid refresh token - clearing storage");
+      console.warn("⚠️ Token that failed:", {
+        tokenId: refreshTokenFromStorage?.substring(0, 32),
+        fullToken: refreshTokenFromStorage,
+      });
       // Clear both cookie and localStorage
       try {
         document.cookie =
@@ -143,6 +178,7 @@ export async function refreshAccessToken(signal = undefined) {
       } catch (e) {
         // Ignore cookie clearing errors
       }
+      // Clear localStorage on invalid token (token was rotated or invalid)
       localStorage.removeItem("refreshToken");
     }
 
@@ -154,8 +190,11 @@ export async function refreshAccessToken(signal = undefined) {
   const data = await response.json();
 
   // Update refresh token in localStorage if provided (for localhost)
-  if (data.refreshToken) {
-    localStorage.setItem("refreshToken", data.refreshToken);
+  const refreshToken =
+    data.refreshToken || response.headers.get("x-refresh-token");
+  if (refreshToken) {
+    localStorage.setItem("refreshToken", refreshToken);
+    console.log("✅ Refresh token updated in localStorage");
   }
 
   return data;

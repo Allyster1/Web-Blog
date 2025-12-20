@@ -1,7 +1,7 @@
 // API Base URL configuration
-// Uses environment variable or defaults to Render API URL
+// Uses environment variable or defaults based on environment
 const getApiBaseUrl = () => {
-  // Check if VITE_API_URL is set (for local backend testing)
+  // Check if VITE_API_URL is explicitly set (highest priority)
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
@@ -11,8 +11,9 @@ const getApiBaseUrl = () => {
     return "https://ovardov99-web-blog-api.onrender.com";
   }
 
-  // In development, use Render API URL (or set VITE_API_URL for local backend)
-  return "https://ovardov99-web-blog-api.onrender.com";
+  // In development, default to local backend
+  // You can override by setting VITE_API_URL in .env file
+  return "http://localhost:5000";
 };
 
 export const API_BASE_URL = getApiBaseUrl();
