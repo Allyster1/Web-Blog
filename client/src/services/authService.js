@@ -2,7 +2,10 @@ import { API_BASE_URL } from "../config/apiConfig.js";
 
 const BASE_URL = `${API_BASE_URL}/api/v1/auth`;
 
-export async function login({ email, password }, signal = undefined) {
+export async function login(
+  { email, password, rememberMe = false },
+  signal = undefined
+) {
   const response = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: {
@@ -10,7 +13,7 @@ export async function login({ email, password }, signal = undefined) {
     },
     credentials: "include",
     signal,
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, rememberMe }),
   });
 
   if (!response.ok) {

@@ -35,7 +35,7 @@ export async function register(fullName, email, password, rePass) {
   return { accessToken, refreshToken: token };
 }
 
-export async function login(email, password) {
+export async function login(email, password, rememberMe = false) {
   const user = await User.findOne({ email }).select("+password");
   if (!user) throw new UnauthorizedError("Invalid email or password");
 
@@ -43,7 +43,9 @@ export async function login(email, password) {
   if (!isValid) throw new UnauthorizedError("Invalid email or password");
 
   const accessToken = generateAccessToken(user);
-  const { token, tokenId, expiresAt } = generateRefreshToken();
+  // If rememberMe is true, extend refresh token to 30 days, otherwise use 1 day (session-like)
+  const expiryDays = rememberMe ? 30 : 1;
+  const { token, tokenId, expiresAt } = generateRefreshToken(expiryDays);
 
   user.refreshToken = {
     token: await hashToken(token),
@@ -52,7 +54,7 @@ export async function login(email, password) {
   };
   await user.save();
 
-  return { accessToken, refreshToken: token };
+  return { accessToken, refreshToken: token, expiryDays };
 }
 
 export async function logout(userId) {

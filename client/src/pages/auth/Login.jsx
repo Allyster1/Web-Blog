@@ -11,6 +11,7 @@ export default function Login() {
   const { login: setAuthToken } = useAuth();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const abortControllerRef = useRef(null);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function Login() {
     setError("");
     setIsLoading(true);
     try {
-      const result = await login(values, signal);
+      const result = await login({ ...values, rememberMe }, signal);
       if (!signal.aborted) {
         setAuthToken(result.accessToken);
         navigate("/");
@@ -93,10 +94,18 @@ export default function Login() {
 
       <div className="flex justify-between">
         <div className="flex gap-2">
-          <input type="checkbox" name="remember" id="remember" />
+          <input
+            type="checkbox"
+            name="remember"
+            id="remember"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            disabled={isLoading}
+            className="cursor-pointer"
+          />
           <label
             htmlFor="remember"
-            className="text-[#718096] font-medium text-sm ml-0.5"
+            className="text-[#718096] font-medium text-sm ml-0.5 cursor-pointer"
           >
             Remember Me
           </label>

@@ -60,10 +60,14 @@ userController.post(
   validate,
   async (req, res, next) => {
     try {
-      const { email, password } = req.body;
-      const { accessToken, refreshToken } = await login(email, password);
+      const { email, password, rememberMe = false } = req.body;
+      const { accessToken, refreshToken, expiryDays } = await login(
+        email,
+        password,
+        rememberMe
+      );
 
-      attachTokensToResponse(res, accessToken, refreshToken, req);
+      attachTokensToResponse(res, accessToken, refreshToken, req, expiryDays);
 
       // For localhost: include refreshToken in response body (for localStorage fallback)
       const isLocalhostOrigin =
@@ -73,7 +77,7 @@ userController.post(
 
       res.status(200).json({
         accessToken,
-        ...(isLocalhostOrigin && { refreshToken }),
+        ...(isLocalhostOrigin && { refreshToken, expiryDays }),
       });
     } catch (error) {
       next(error);

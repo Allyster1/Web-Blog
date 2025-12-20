@@ -35,10 +35,10 @@ export function generateAccessToken(user) {
 /**
  * Generate a new refresh token with an expiration date.
  *
- * @param {number} [expiryDays=7] - Number of days until the refresh token expires.
+ * @param {number} [expiryDays=1] - Number of days until the refresh token expires.
  * @returns {{ token: string, tokenId: string, expiresAt: Date }} An object containing the generated refresh token, its identifier prefix, and expiration date.
  */
-export function generateRefreshToken(expiryDays = 7) {
+export function generateRefreshToken(expiryDays = 1) {
   const token = crypto.randomBytes(64).toString("hex");
   const tokenId = token.substring(0, 32);
   const expiresAt = new Date();
@@ -108,7 +108,8 @@ export async function rotateRefreshToken(oldToken) {
     throw new UnauthorizedError("Invalid refresh token");
   }
 
-  // Generate new tokens
+  // Generate new tokens (use same expiry as original token or default 1 day)
+  // For token rotation, maintain shorter expiry for security
   const { token, tokenId: newTokenId, expiresAt } = generateRefreshToken();
   const accessToken = generateAccessToken(userFound);
 
@@ -165,13 +166,14 @@ export function attachTokensToResponse(
   res,
   accessToken,
   refreshToken,
-  req = null
+  req = null,
+  expiryDays = 1
 ) {
   res.setHeader("x-access-token", accessToken);
 
   const cookieOptions = {
     ...getRefreshTokenCookieOptions(req),
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: expiryDays * 24 * 60 * 60 * 1000,
   };
 
   res.cookie("refreshToken", refreshToken, cookieOptions);
