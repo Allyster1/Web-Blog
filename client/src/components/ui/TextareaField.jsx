@@ -6,6 +6,7 @@ export default function TextareaField({
   value,
   onChange,
   rows = 6,
+  disabled = false,
 }) {
   return (
     <div className="flex flex-col">
@@ -23,7 +24,8 @@ export default function TextareaField({
         value={value}
         onChange={onChange}
         rows={rows}
-        className="rounded-2xl px-4 py-2.5 border border-gray-300 focus:border-gray-500 focus:outline-none resize-y min-h-[150px]"
+        disabled={disabled}
+        className="rounded-2xl px-4 py-2.5 border border-gray-300 focus:border-gray-500 focus:outline-none resize-y min-h-[150px] disabled:opacity-50 disabled:cursor-not-allowed"
       />
     </div>
   );

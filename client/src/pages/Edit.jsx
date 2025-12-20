@@ -100,7 +100,11 @@ export default function Edit() {
           </div>
         )}
 
-        <form className="flex flex-col gap-6" onSubmit={submitHandler}>
+        <form
+          className="flex flex-col gap-6"
+          onSubmit={submitHandler}
+          noValidate
+        >
           <InputField
             label="Title"
             id="title"
@@ -110,6 +114,7 @@ export default function Edit() {
             required
             value={values.title}
             onChange={changeHandler}
+            disabled={isSubmitting}
           />
 
           <TextareaField
@@ -121,6 +126,7 @@ export default function Edit() {
             rows={12}
             value={values.content}
             onChange={changeHandler}
+            disabled={isSubmitting}
           />
 
           <div className="flex flex-col gap-4">
@@ -169,6 +175,7 @@ export default function Edit() {
               placeholder="https://example.com/image.jpg"
               value={values.image}
               onChange={changeHandler}
+              disabled={isSubmitting}
             />
             <p className="text-xs text-gray-500">
               Upload an image file or provide an image URL. Leave empty to keep
@@ -185,7 +192,11 @@ export default function Edit() {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Updating..." : "Update Article"}
             </Button>
           </div>

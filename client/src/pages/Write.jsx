@@ -75,7 +75,11 @@ export default function Write() {
             </div>
           )}
 
-          <form className="flex flex-col gap-6" onSubmit={submitHandler}>
+          <form
+            className="flex flex-col gap-6"
+            onSubmit={submitHandler}
+            noValidate
+          >
             <InputField
               label="Title"
               id="title"
@@ -85,6 +89,7 @@ export default function Write() {
               required
               value={values.title}
               onChange={changeHandler}
+              disabled={isSubmitting}
             />
 
             <TextareaField
@@ -96,6 +101,7 @@ export default function Write() {
               rows={12}
               value={values.content}
               onChange={changeHandler}
+              disabled={isSubmitting}
             />
 
             <div className="flex flex-col gap-4">
@@ -131,6 +137,7 @@ export default function Write() {
                 placeholder="https://example.com/image.jpg"
                 value={values.image}
                 onChange={changeHandler}
+                disabled={isSubmitting}
               />
               <p className="text-xs text-gray-500">
                 Upload an image file or provide an image URL.
@@ -146,7 +153,11 @@ export default function Write() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                isLoading={isSubmitting}
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "Publishing..." : "Publish Article"}
               </Button>
             </div>

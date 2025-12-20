@@ -228,8 +228,9 @@ export default function BlogDetail() {
                   </Button>
                   <Button
                     onClick={handleDelete}
+                    isLoading={isDeleting}
                     disabled={isDeleting}
-                    className="!bg-red-600 !hover:bg-red-700 !text-white !border-red-600 disabled:opacity-50"
+                    className="!bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
                   >
                     {isDeleting ? "Deleting..." : "Delete"}
                   </Button>
@@ -308,10 +309,12 @@ export default function BlogDetail() {
                       onChange={(e) => setCommentContent(e.target.value)}
                       rows={4}
                       required
+                      disabled={isSubmittingComment}
                     />
                     <div className="mt-4 flex justify-end">
                       <Button
                         type="submit"
+                        isLoading={isSubmittingComment}
                         disabled={isSubmittingComment || !commentContent.trim()}
                       >
                         {isSubmittingComment ? "Posting..." : "Post Comment"}

@@ -9,6 +9,7 @@ export default function PasswordField({
   onChange,
   autoComplete,
   showStrengthInfo = false,
+  disabled = false,
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -30,7 +31,8 @@ export default function PasswordField({
           value={value}
           onChange={onChange}
           autoComplete={autoComplete}
-          className="rounded-2xl px-4 py-2.5 pr-12 border border-gray-300 focus:border-gray-500 focus:outline-none w-full"
+          disabled={disabled}
+          className="rounded-2xl px-4 py-2.5 pr-12 border border-gray-300 focus:border-gray-500 focus:outline-none w-full disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <button
           type="button"
