@@ -38,7 +38,16 @@ userController.post(
 
       attachTokensToResponse(res, accessToken, refreshToken, req);
 
-      res.status(201).json({ accessToken });
+      // For localhost: include refreshToken in response body (for localStorage fallback)
+      const isLocalhostOrigin =
+        req?.headers?.origin &&
+        (req.headers.origin.includes("localhost") ||
+          req.headers.origin.includes("127.0.0.1"));
+
+      res.status(201).json({
+        accessToken,
+        ...(isLocalhostOrigin && { refreshToken }),
+      });
     } catch (error) {
       next(error);
     }
@@ -57,7 +66,16 @@ userController.post(
 
       attachTokensToResponse(res, accessToken, refreshToken, req);
 
-      res.status(200).json({ accessToken });
+      // For localhost: include refreshToken in response body (for localStorage fallback)
+      const isLocalhostOrigin =
+        req?.headers?.origin &&
+        (req.headers.origin.includes("localhost") ||
+          req.headers.origin.includes("127.0.0.1"));
+
+      res.status(200).json({
+        accessToken,
+        ...(isLocalhostOrigin && { refreshToken }),
+      });
     } catch (error) {
       next(error);
     }
@@ -100,7 +118,16 @@ userController.post("/refresh", refreshRateLimiter, async (req, res, next) => {
 
     attachTokensToResponse(res, tokens.accessToken, tokens.refreshToken, req);
 
-    res.status(200).json({ accessToken: tokens.accessToken });
+    // For localhost: include refreshToken in response body (for localStorage fallback)
+    const isLocalhostOrigin =
+      req?.headers?.origin &&
+      (req.headers.origin.includes("localhost") ||
+        req.headers.origin.includes("127.0.0.1"));
+
+    res.status(200).json({
+      accessToken: tokens.accessToken,
+      ...(isLocalhostOrigin && { refreshToken: tokens.refreshToken }),
+    });
   } catch (error) {
     res.clearCookie("refreshToken", cookieOptions);
     next(error);

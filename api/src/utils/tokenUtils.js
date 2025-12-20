@@ -167,4 +167,15 @@ export function attachTokensToResponse(
   };
 
   res.cookie("refreshToken", refreshToken, cookieOptions);
+
+  // For localhost development: also return refreshToken in response body
+  // This allows frontend to store it in localStorage when cookies don't work cross-origin
+  const isLocalhostOrigin =
+    req?.headers?.origin &&
+    (req.headers.origin.includes("localhost") ||
+      req.headers.origin.includes("127.0.0.1"));
+
+  if (isLocalhostOrigin) {
+    res.setHeader("x-refresh-token", refreshToken);
+  }
 }
