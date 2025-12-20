@@ -52,7 +52,7 @@ export default function Footer() {
                 <FaGithub />
               </a>
               <a
-                href="https://linkedin.com/in/yourprofile"
+                href="https://www.linkedin.com/in/slavi-ovardov/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.socialLink}
