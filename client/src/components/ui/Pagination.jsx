@@ -22,7 +22,7 @@ export default function Pagination({
   const endItem = Math.min(page * limit, total);
 
   return (
-    <div className={`flex flex-col items-center gap-4 mt-8 ${className}`}>
+    <div className={`flex flex-col items-center gap-4 my-8 ${className}`}>
       {total > 0 && (
         <div className="text-sm text-gray-600">
           Showing {startItem} to {endItem} of {total} result
