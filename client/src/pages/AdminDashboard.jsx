@@ -141,14 +141,14 @@ export default function AdminDashboard() {
                           </div>
                         </div>
 
-                        <div className="flex gap-3 pt-4 border-t border-gray-200">
+                        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
                           <Button
                             type="button"
                             variant="secondary"
                             onClick={() =>
                               navigate(`/blog/${blog._id}/details`)
                             }
-                            className="flex-1"
+                            className="flex-1 w-full sm:w-auto"
                           >
                             View Full Article
                           </Button>
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
                               handleStatusUpdate(blog._id, "approved", e)
                             }
                             disabled={updatingBlogId === blog._id}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                            className="flex-1 w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white"
                           >
                             {updatingBlogId === blog._id
                               ? "Processing..."
@@ -170,7 +170,7 @@ export default function AdminDashboard() {
                               handleStatusUpdate(blog._id, "rejected", e)
                             }
                             disabled={updatingBlogId === blog._id}
-                            className="flex-1 !bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
+                            className="flex-1 w-full sm:w-auto !bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
                           >
                             {updatingBlogId === blog._id
                               ? "Processing..."
