@@ -54,10 +54,21 @@ export async function getAllBlogs(page = 1, limit = 9, sortBy = "createdAt") {
 }
 
 export async function getBlogById(blogId, user = null) {
-  // Build query - admins can view any blog, others only approved
-  const query = { _id: blogId };
+  // Build query - admins can view any blog, creators can view their own pending blogs, others only approved
+  let query = { _id: blogId };
+
   if (!user || user.role !== "admin") {
-    query.status = "approved";
+    // First, check if the blog exists and if user is the author
+    const blogCheck = await Blog.findById(blogId).select("author status");
+    if (!blogCheck) {
+      throw new BadRequestError("Blog not found");
+    }
+
+    // If user is the author, they can view it regardless of status
+    // Otherwise, only show approved blogs
+    if (!user || blogCheck.author.toString() !== user.id?.toString()) {
+      query.status = "approved";
+    }
   }
 
   const blog = await Blog.findOne(query)

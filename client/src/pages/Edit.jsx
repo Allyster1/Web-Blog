@@ -26,7 +26,8 @@ export default function Edit() {
     const fetchBlog = async () => {
       try {
         setIsLoading(true);
-        const blog = await getBlogById(id);
+        // Pass accessToken to allow viewing/editing pending articles
+        const blog = await getBlogById(id, accessToken);
         setValues({
           title: blog.title || "",
           content: blog.content || "",
@@ -43,7 +44,7 @@ export default function Edit() {
     if (id) {
       fetchBlog();
     }
-  }, [id]);
+  }, [id, accessToken]);
 
   const changeHandler = (e) => {
     if (e.target.name === "imageFile" && e.target.files?.[0]) {

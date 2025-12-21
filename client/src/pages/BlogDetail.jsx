@@ -267,24 +267,28 @@ export default function BlogDetail() {
 
             {/* Likes Actions */}
             <div className="mt-8 pt-6 border-t border-gray-200">
-              <div className="flex gap-6 items-center mb-6">
+              <div className="flex flex-wrap gap-4 items-center mb-6">
                 <button
                   onClick={handleLike}
                   disabled={isLiking || !isAuthenticated}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-medium shadow-sm ${
                     hasLiked
-                      ? "bg-green-100 text-green-700 hover:bg-green-200"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md"
+                      : "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200"
                   } ${!isAuthenticated ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <FaThumbsUp />
                   <span>{blog.likes?.length || 0}</span>
                   {isLiking && <span className="text-xs">...</span>}
                 </button>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-50 text-purple-700 border border-purple-200 font-medium shadow-sm">
+                  <span className="text-lg">💬</span>
+                  <span>{blog.comments?.length || 0} Comments</span>
+                </div>
               </div>
 
               {/* Comments Section */}
-              <div className="mt-8">
+              <div className="mt-6">
                 <h3 className="text-xl font-bold text-[#212121] mb-4">
                   Comments ({blog.comments?.length || 0})
                 </h3>

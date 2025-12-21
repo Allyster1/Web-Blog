@@ -155,34 +155,37 @@ export default function MyPosts() {
                             {blog.content}
                           </p>
 
-                          <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
-                            <span>
-                              <strong>Created:</strong>{" "}
-                              {formatBlogDate(blog.createdAt)}
-                            </span>
-                            {blog.updatedAt && (
-                              <span>
-                                <strong>Updated:</strong>{" "}
-                                {formatBlogDate(blog.updatedAt)}
-                              </span>
-                            )}
+                          <div className="flex flex-wrap gap-3 mb-4">
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg text-sm text-gray-700">
+                              <span className="text-gray-500">📅</span>
+                              <span className="font-medium">Created:</span>
+                              <span>{formatBlogDate(blog.createdAt)}</span>
+                            </div>
+                            {blog.updatedAt &&
+                              blog.updatedAt !== blog.createdAt && (
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg text-sm text-gray-700">
+                                  <span className="text-gray-500">✏️</span>
+                                  <span className="font-medium">Updated:</span>
+                                  <span>{formatBlogDate(blog.updatedAt)}</span>
+                                </div>
+                              )}
                             <span>
                               <strong>Likes:</strong> {blog.likes?.length || 0}
                             </span>
-                            <span>
+                            <span className="ml-4">
                               <strong>Comments:</strong>{" "}
                               {blog.comments?.length || 0}
                             </span>
                           </div>
                         </div>
 
-                        <div className="flex gap-3 pt-4 border-t border-gray-200">
+                        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
                           <Button
                             variant="secondary"
                             onClick={() =>
                               navigate(`/blog/${blog._id}/details`)
                             }
-                            className="flex-1"
+                            className="flex-1 w-full sm:w-auto"
                           >
                             View Article
                           </Button>
@@ -190,7 +193,7 @@ export default function MyPosts() {
                             <Button
                               variant="secondary"
                               onClick={() => navigate(`/blog/${blog._id}/edit`)}
-                              className="flex-1"
+                              className="flex-1 w-full sm:w-auto"
                             >
                               Edit
                             </Button>
@@ -198,7 +201,7 @@ export default function MyPosts() {
                           <Button
                             onClick={() => handleDelete(blog._id)}
                             disabled={deletingBlogId === blog._id}
-                            className="flex-1 !bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
+                            className="flex-1 w-full sm:w-auto !bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
                           >
                             {deletingBlogId === blog._id
                               ? "Deleting..."

@@ -119,7 +119,7 @@ export default function Register() {
         {isLoading ? "Signing up..." : "Sign up"}
       </button>
 
-      <p className="text-[#718096] text-sm text-center">
+      <p className="text-[#718096] text-sm text-center mb-8">
         Already have an account?
         <Link to="/auth/login" className="underline text-[#1C4532] ml-1">
           Login now

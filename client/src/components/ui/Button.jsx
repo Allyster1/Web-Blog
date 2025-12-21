@@ -12,9 +12,12 @@ export default function Button({
   const roundedClass = variant === "rounded" ? "rounded-3xl" : "rounded-2xl";
 
   const variants = {
-    primary: "bg-[#53946c] text-[#F7FAFC] hover:bg-[#3a795b]",
-    secondary: "border border-gray-300 text-[#171923] hover:bg-gray-50",
-    rounded: "bg-[#53946c] text-[#F7FAFC] hover:bg-[#3a795b]",
+    primary:
+      "bg-[#53946c] text-[#F7FAFC] hover:bg-[#3a795b] shadow-md hover:shadow-lg",
+    secondary:
+      "border-2 border-gray-300 text-[#171923] hover:bg-gray-100 hover:border-gray-400 shadow-sm hover:shadow-md",
+    rounded:
+      "bg-[#53946c] text-[#F7FAFC] hover:bg-[#3a795b] shadow-md hover:shadow-lg",
   };
 
   const disabledStyles =
